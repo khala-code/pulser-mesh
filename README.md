@@ -9,7 +9,11 @@ It is designed as the opposite of an apex-extractive system. Instead of routing 
 Pulser Mesh starts from four claims:
 
 1. local economic life is graph-shaped rather than purely transactional,
+<<<<<<< HEAD
 2. scarcity should be measured directly rather than replaced by vague "impact" language,
+=======
+2. scarcity should be measured directly rather than replaced by vague “impact” language,
+>>>>>>> main
 3. value-add means moving an input closer to real scarcity resolution,
 4. validated surplus should not automatically concentrate at the top.
 
@@ -90,12 +94,20 @@ This is the canonical geometry and data format in which node state, scarcity lin
 
 ## Repository structure
 
+<<<<<<< HEAD
+=======
+The repo is evolving, but the intended core structure now looks roughly like this:
+
+>>>>>>> main
 ```text
 README.md
 GLOSSARY.md
 CONTRIBUTIONS.md
+<<<<<<< HEAD
 DIAGRAM_RECOMMENDATIONS.md
 SUBSTRATE_INTERFACE.md
+=======
+>>>>>>> main
 schemas/
   NODE_TUPLE.md
   SCARCITY_SCHEMA.md
@@ -103,6 +115,7 @@ schemas/
   VALIDATION_AND_CHECKPOINT.md
   CONSENT_AND_DIVIDEND.md
 adapters/
+<<<<<<< HEAD
   chain/
     ChainAdapter.ts          ← abstract adapter interface
     EthereumAdapter.ts       ← viem-based ETH/EVM implementation
@@ -127,13 +140,27 @@ The `adapters/chain/` directory contains the settlement and validation layer tha
 
 **Cross-referencing** (`T3SubgraphRegistry.ts`, `T3CrossReference.ts`) enables multiple T3 validators covering the same window to compare results. After each validator publishes its checkpoint result to the shared registry, the cross-reference engine computes pairwise interference scores, detects divergent validators, and derives a quorum-weighted consensus surplus using a constructive-score-weighted median.
 
+=======
+  FOOD_ADAPTER.md
+SUBSTRATE_INTERFACE.md
+whitepaper/
+  pulser_mesh_whitepaper_v1.0.md
+DIAGRAM_RECOMMENDATIONS.md
+diagrams/
+```
+
+>>>>>>> main
 ## What makes Pulser Mesh different
 
 Pulser Mesh is not trying to be:
 
 - a generic local-currency project,
 - a reputation graph for its own sake,
+<<<<<<< HEAD
 - an "impact" layer detached from real deprivation,
+=======
+- an “impact” layer detached from real deprivation,
+>>>>>>> main
 - or a governance token wrapped around ordinary extraction.
 
 It is trying to define a protocol in which:
@@ -162,8 +189,11 @@ This repository is still in the open specification stage.
 
 The current priority is not fast shipping. It is conceptual compression: getting the ontology, schemas, validation logic, and substrate interface coherent enough that prototype code can later be built without the whole system collapsing into metaphor.
 
+<<<<<<< HEAD
 The chain adapter and T3 validator implementation (`adapters/chain/`) is the first executable layer. It is deliberately thin — enough to run checkpoints, anchor results on-chain, and cross-reference between validators — without pre-committing to a specific consensus or gossip mechanism.
 
+=======
+>>>>>>> main
 ## Good next contributions
 
 Strong contributions right now include:
@@ -173,14 +203,19 @@ Strong contributions right now include:
 - simplifying the protocol language without flattening it,
 - formalizing schemas into machine-readable formats,
 - building tiny graph or checkpoint prototypes,
+<<<<<<< HEAD
 - pressure-testing the food adapter against real local data,
 - implementing a persistent `RegistryBackend` (libp2p, Redis, or SQLite) for T3 cross-referencing,
 - and extending `T3CrossReference` with a live gossip layer for proactive interference detection.
+=======
+- and pressure-testing the food adapter against real local data.
+>>>>>>> main
 
 ## Read next
 
 A sensible reading path is:
 
+<<<<<<< HEAD
 1. [`GLOSSARY.md`](./GLOSSARY.md)
 2. [`schemas/SCARCITY_SCHEMA.md`](./schemas/SCARCITY_SCHEMA.md)
 3. [`schemas/VALUE_ADD_TRANSFORMATION.md`](./schemas/VALUE_ADD_TRANSFORMATION.md)
@@ -193,3 +228,16 @@ A sensible reading path is:
 ## License
 
 GPLv3. See [`LICENSE`](./LICENSE).
+=======
+1. `GLOSSARY.md`
+2. `SCARCITY_SCHEMA.md`
+3. `VALUE_ADD_TRANSFORMATION_SCHEMA.md`
+4. `VALIDATION_AND_CHECKPOINT.md`
+5. `CONSENT_AND_DIVIDEND.md`
+6. `SUBSTRATE_12P1D.md`
+7. `FOOD_ADAPTER.md`
+
+## License
+
+The repository license is still being finalized. The current direction under discussion is a strong copyleft core so that protocol implementations remain part of a commons rather than being easily enclosed as proprietary infrastructure.
+>>>>>>> main

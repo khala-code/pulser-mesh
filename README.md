@@ -1,86 +1,174 @@
 # Pulser Mesh
 
-Pulser Mesh is an open protocol for turning local meshes of favors, trade, and value-added transformation into validated pulses of common surplus and universal dividend flow.
+Pulser Mesh is an open protocol for validating local meshes of reciprocity, trade, and value-add transformation, then converting verified common surplus into downstream dividend pulses.
 
-The project starts from a simple idea: if local economic actors verifiably reduce a real scarcity in a real place, some of the resulting surplus should flow back to participating persons as a flat downstream dividend rather than concentrating at an apex.
+It is designed as the opposite of an apex-extractive system. Instead of routing value upward into a bottleneck, Pulser Mesh tries to detect when local activity has genuinely reduced a real scarcity in a real place, validate that reduction through a checkpoint boundary, and pulse a share of the resulting surplus back down to participants.
 
 ## Core idea
 
-Pulser Mesh borrows its image from the trompe and pulser pump: a no-moving-parts water system that entrains flow locally and lifts water above its source through geometry rather than a central impeller. In protocol terms:
+Pulser Mesh starts from four claims:
 
-- Local activity creates the flow field.
-- A checkpoint separates valid surplus from extractive noise.
-- The protocol emits a dividend pulse back into the base layer.
+1. local economic life is graph-shaped rather than purely transactional,
+2. scarcity should be measured directly rather than replaced by vague “impact” language,
+3. value-add means moving an input closer to real scarcity resolution,
+4. validated surplus should not automatically concentrate at the top.
 
-This is meant to be the opposite of a pyramid. Instead of routing value upward into a bottleneck, Pulser Mesh validates local graphs and pulses verified common surplus back down to the people and places that generated it.
+The protocol therefore tries to connect:
 
-## What the repo is for
+- local meshes of favors, care, trade, and transformation,
+- a unified scarcity grammar,
+- anti-extractive validation rules,
+- checkpoint logic,
+- and downstream dividend settlement.
 
-This repository is the open development home for:
+## Current architecture
 
-- The Pulser Mesh whitepaper and evolving protocol specification.
-- Data models for nodes, edges, scarcity fields, and checkpoints.
-- Prototype graph logic for local favor and trade meshes.
-- Validation rules for anti-extractive topology.
-- Early cryptographic and rollup experiments for checkpoint proofs.
+The current protocol draft is organized around the following layers.
 
-## System sketch
+### 1. Node tuple
 
-Pulser Mesh has three conceptual layers:
+The node tuple is the working state fingerprint of a participant:
 
-| Layer | Role |
-|---|---|
-| Local mesh | Records favors, trade, consent, and value-added transformations |
-| Checkpoint / shell | Validates local graph state and computes common surplus |
-| Settlement / core | Finalizes proofs and distributes dividend pulses |
-
-The local layer is intentionally relational and place-specific. The checkpoint layer is where graph conditions and scarcity claims are validated. The settlement layer is minimal and exists mainly to enforce invariant rules and payout logic.
-
-## Initial protocol concepts
-
-The first version of the model revolves around a node tuple:
-
-\[
+$$
 \mathcal{N} = (p, q, \phi, \vec{m}_s, \vec{g}, \Xi)
-\]
+$$
+
+It captures embedding, structural quality, growth behavior, mission orientation, geography, and coherence.
+
+### 2. Scarcity schema
+
+Pulser Mesh uses a unified scarcity schema based on a triadic rotor:
+
+$$
+R = (s, k, \tau)
+$$
 
 Where:
 
-- \(p\), \(q\): winding / structural embedding parameters.
-- \(\phi\): local growth ratio.
-- \(\vec{m}_s\): mission vector in scarcity space.
-- \(\vec{g}\): geographic grounding.
-- \(\Xi\): coherence floor for stable participation.
+- `s` = sine, lived penetration,
+- `k` = cosine, structural alignment,
+- `tau` = tangent, instability gradient.
 
-The long-term goal is to validate this tuple against real scarcity fields, local graph behavior, and bounded anti-extractive conditions rather than mere self-description.
+This gives the protocol one common measurement grammar across food, housing, care, mobility, and other scarcity classes.
 
-## Scarcity-first orientation
+### 3. Value-add transformation schema
 
-Pulser Mesh treats scarcity as a measurable field rather than a slogan. For food, that means working with dimensions such as availability, access, utilization, and stability rather than a single vague “impact” score. A mission is legitimate only if it can be shown to reduce an actual deficit in the node’s declared geography over time.
+Value-add transformation is treated as a protocol-level schema rather than a domain-specific adapter.
 
-## Suggested first milestones
+A transformation counts when it moves an input into an output that is meaningfully closer to satisfying a real scarcity channel in a real geography.
 
-1. Formalize the node tuple and validation predicates.
-2. Build a local graph prototype for favors and trade.
-3. Define the first scarcity oracle for one scarcity class, likely food.
-4. Implement checkpoint logic that accepts valid local graph snapshots.
-5. Add proof and settlement experiments once the local model is coherent.
+### 4. Consent check
 
-## Design principles
+Counted relations must be consensual.
 
-- Local first.
-- Consent before aggregation.
-- Geography before abstraction.
-- Scarcity reduction before valuation.
-- Bounded growth over apex extraction.
-- Open specification over black-box governance.
+At the current conceptual layer, the protocol treats consent as a synchronized tangent-path event between relevant observers. Operational implementations can later represent this through shared edge-intent objects, signatures, or equivalent machine-verifiable consent artifacts.
+
+### 5. Validation and checkpoint
+
+Validation and checkpoint logic are currently specified together.
+
+A checkpoint evaluates whether submitted graph state is:
+
+- structurally valid,
+- consensual,
+- non-extractive,
+- scarcity-aligned,
+- coherent,
+- and sufficient to justify validated surplus.
+
+### 6. Dividend pulse
+
+Checkpoint-validated surplus can be split into reserve, maintenance, local reinvestment, and a flat participant dividend pool.
+
+The dividend unit is intentionally only loosely specified at this stage. The protocol priority is legitimacy of emission before monetary design sophistication.
+
+### 7. 12+1D substrate
+
+Beneath all of the above sits the 12+1D substrate interface.
+
+This is the canonical geometry and data format in which node state, scarcity linkage, consent state, transformation state, and checkpoint participation can be encoded, projected to a boundary, and eventually compiled into privacy-preserving proof systems.
+
+## Repository structure
+
+The repo is evolving, but the intended core structure now looks roughly like this:
+
+```text
+README.md
+GLOSSARY.md
+CONTRIBUTIONS.md
+schemas/
+  NODE_TUPLE.md
+  SCARCITY_SCHEMA.md
+  VALUE_ADD_TRANSFORMATION.md
+  VALIDATION_AND_CHECKPOINT.md
+  CONSENT_AND_DIVIDEND.md
+adapters/
+  FOOD_ADAPTER.md
+SUBSTRATE_INTERFACE.md
+whitepaper/
+  pulser_mesh_whitepaper_v1.0.md
+DIAGRAM_RECOMMENDATIONS.md
+diagrams/
+```
+
+## What makes Pulser Mesh different
+
+Pulser Mesh is not trying to be:
+
+- a generic local-currency project,
+- a reputation graph for its own sake,
+- an “impact” layer detached from real deprivation,
+- or a governance token wrapped around ordinary extraction.
+
+It is trying to define a protocol in which:
+
+- local activity is represented as graph structure,
+- scarcity is measured through a unified schema,
+- value-add is tied to real transformation,
+- admissibility depends on consent,
+- checkpoint logic rejects extractive topology,
+- and dividend flow is downstream by design.
+
+## First domain implementation
+
+The first concrete scarcity adapter is food.
+
+Food is a strong starting point because it makes the protocol's logic relatively legible:
+
+- lived burden can be observed,
+- access structure can be mapped,
+- instability can be measured,
+- and transformations such as storage, routing, and preparation are easy to understand as movement toward scarcity resolution.
 
 ## Current status
 
-The project is at the open design and prototyping stage. The immediate goal is to build the conceptual substrate in public, pressure-test the language, and iterate toward code that can represent the local mesh and checkpoint logic faithfully.
+This repository is still in the open specification stage.
+
+The current priority is not fast shipping. It is conceptual compression: getting the ontology, schemas, validation logic, and substrate interface coherent enough that prototype code can later be built without the whole system collapsing into metaphor.
+
+## Good next contributions
+
+Strong contributions right now include:
+
+- tightening definitions,
+- challenging hidden assumptions,
+- simplifying the protocol language without flattening it,
+- formalizing schemas into machine-readable formats,
+- building tiny graph or checkpoint prototypes,
+- and pressure-testing the food adapter against real local data.
 
 ## Read next
 
-- `whitepaper/pulser_mesh_whitepaper_v1.0.md`
-- `GLOSSARY.md`
-- `CONTRIBUTIONS.md`
+A sensible reading path is:
+
+1. `GLOSSARY.md`
+2. `SCARCITY_SCHEMA.md`
+3. `VALUE_ADD_TRANSFORMATION_SCHEMA.md`
+4. `VALIDATION_AND_CHECKPOINT.md`
+5. `CONSENT_AND_DIVIDEND.md`
+6. `SUBSTRATE_12P1D.md`
+7. `FOOD_ADAPTER.md`
+
+## License
+
+The repository license is still being finalized. The current direction under discussion is a strong copyleft core so that protocol implementations remain part of a commons rather than being easily enclosed as proprietary infrastructure.

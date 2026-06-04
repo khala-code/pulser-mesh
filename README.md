@@ -9,7 +9,7 @@ It is designed as the opposite of an apex-extractive system. Instead of routing 
 Pulser Mesh starts from four claims:
 
 1. local economic life is graph-shaped rather than purely transactional,
-2. scarcity should be measured directly rather than replaced by vague “impact” language,
+2. scarcity should be measured directly rather than replaced by vague "impact" language,
 3. value-add means moving an input closer to real scarcity resolution,
 4. validated surplus should not automatically concentrate at the top.
 
@@ -90,12 +90,12 @@ This is the canonical geometry and data format in which node state, scarcity lin
 
 ## Repository structure
 
-The repo is evolving, but the intended core structure now looks roughly like this:
-
 ```text
 README.md
 GLOSSARY.md
 CONTRIBUTIONS.md
+DIAGRAM_RECOMMENDATIONS.md
+SUBSTRATE_INTERFACE.md
 schemas/
   NODE_TUPLE.md
   SCARCITY_SCHEMA.md
@@ -103,13 +103,29 @@ schemas/
   VALIDATION_AND_CHECKPOINT.md
   CONSENT_AND_DIVIDEND.md
 adapters/
-  FOOD_ADAPTER.md
-SUBSTRATE_INTERFACE.md
+  chain/
+    ChainAdapter.ts          ← abstract adapter interface
+    EthereumAdapter.ts       ← viem-based ETH/EVM implementation
+    BitcoinAdapter.ts        ← Lightning + on-chain PSBT implementation
+    T3ValidatorNode.ts       ← T3 layer validator: runs full checkpoint pipeline
+    T3SubgraphRegistry.ts    ← publish/discover validator results
+    T3CrossReference.ts      ← pairwise interference + quorum consensus
+    types.ts                 ← shared domain types
+    example_validator.ts     ← three-validator cross-reference smoke test
 whitepaper/
   pulser_mesh_whitepaper_v1.0.md
-DIAGRAM_RECOMMENDATIONS.md
 diagrams/
 ```
+
+## Chain adapter and T3 validator nodes
+
+The `adapters/chain/` directory contains the settlement and validation layer that connects the mesh protocol to external chains.
+
+**Chain adapters** (`ChainAdapter.ts`, `EthereumAdapter.ts`, `BitcoinAdapter.ts`) translate mesh surplus pulses into on-chain settlement transactions and anchor checkpoint commitments. Vortex metadata is encoded into ETH calldata or Bitcoin `OP_RETURN` outputs so the on-chain record is traceable back to a specific checkpoint window and geography.
+
+**T3 validator nodes** (`T3ValidatorNode.ts`) operate at the impersonal market/firm layer (T3). Each validator loads a local subgraph, runs the full 8-stage checkpoint pipeline — envelope validation, entity screening, edge screening, graph shape analysis, scarcity alignment, surplus estimation, downweighting, and finalisation — and produces a `CheckpointResult` with constructive and destructive interference scores.
+
+**Cross-referencing** (`T3SubgraphRegistry.ts`, `T3CrossReference.ts`) enables multiple T3 validators covering the same window to compare results. After each validator publishes its checkpoint result to the shared registry, the cross-reference engine computes pairwise interference scores, detects divergent validators, and derives a quorum-weighted consensus surplus using a constructive-score-weighted median.
 
 ## What makes Pulser Mesh different
 
@@ -117,7 +133,7 @@ Pulser Mesh is not trying to be:
 
 - a generic local-currency project,
 - a reputation graph for its own sake,
-- an “impact” layer detached from real deprivation,
+- an "impact" layer detached from real deprivation,
 - or a governance token wrapped around ordinary extraction.
 
 It is trying to define a protocol in which:
@@ -146,6 +162,8 @@ This repository is still in the open specification stage.
 
 The current priority is not fast shipping. It is conceptual compression: getting the ontology, schemas, validation logic, and substrate interface coherent enough that prototype code can later be built without the whole system collapsing into metaphor.
 
+The chain adapter and T3 validator implementation (`adapters/chain/`) is the first executable layer. It is deliberately thin — enough to run checkpoints, anchor results on-chain, and cross-reference between validators — without pre-committing to a specific consensus or gossip mechanism.
+
 ## Good next contributions
 
 Strong contributions right now include:
@@ -155,20 +173,23 @@ Strong contributions right now include:
 - simplifying the protocol language without flattening it,
 - formalizing schemas into machine-readable formats,
 - building tiny graph or checkpoint prototypes,
-- and pressure-testing the food adapter against real local data.
+- pressure-testing the food adapter against real local data,
+- implementing a persistent `RegistryBackend` (libp2p, Redis, or SQLite) for T3 cross-referencing,
+- and extending `T3CrossReference` with a live gossip layer for proactive interference detection.
 
 ## Read next
 
 A sensible reading path is:
 
-1. `GLOSSARY.md`
-2. `SCARCITY_SCHEMA.md`
-3. `VALUE_ADD_TRANSFORMATION_SCHEMA.md`
-4. `VALIDATION_AND_CHECKPOINT.md`
-5. `CONSENT_AND_DIVIDEND.md`
-6. `SUBSTRATE_12P1D.md`
-7. `FOOD_ADAPTER.md`
+1. [`GLOSSARY.md`](./GLOSSARY.md)
+2. [`schemas/SCARCITY_SCHEMA.md`](./schemas/SCARCITY_SCHEMA.md)
+3. [`schemas/VALUE_ADD_TRANSFORMATION.md`](./schemas/VALUE_ADD_TRANSFORMATION.md)
+4. [`schemas/VALIDATION_AND_CHECKPOINT.md`](./schemas/VALIDATION_AND_CHECKPOINT.md)
+5. [`schemas/CONSENT_AND_DIVIDEND.md`](./schemas/CONSENT_AND_DIVIDEND.md)
+6. [`SUBSTRATE_INTERFACE.md`](./SUBSTRATE_INTERFACE.md)
+7. [`adapters/chain/T3ValidatorNode.ts`](./adapters/chain/T3ValidatorNode.ts)
+8. [`adapters/chain/T3CrossReference.ts`](./adapters/chain/T3CrossReference.ts)
 
 ## License
 
-The repository license is still being finalized. The current direction under discussion is a strong copyleft core so that protocol implementations remain part of a commons rather than being easily enclosed as proprietary infrastructure.
+GPLv3. See [`LICENSE`](./LICENSE).

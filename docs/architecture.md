@@ -5,6 +5,12 @@ implementations. All contributors, node operators, and protocol extensions must
 conform to these principles. Where a feature conflicts with a principle, the
 principle wins.
 
+> **Notation.** The coordinate triple is written **ΩaZaTa** and spoken *Ohma-Za-Ta*.
+> Each axis carries an `a` (alpha) suffix denoting its imaginary/positional component.
+> Ωa = orbital amplitude (Ω magnitude + alpha phase offset); Za = phase angle;
+> Ta = arc length along geodesic. See `docs/asymptotic-auth.md` for the full
+> wavefunction model and `docs/seed-structure.md` for the hidden topological substrate.
+
 ---
 
 ## 1. Privacy-First — No Sensitive Data on the Wire
@@ -15,8 +21,8 @@ stored in a node database, or included in a pulse payload. The protocol encodes
 
 ### What this means in practice
 
-- **Steward identity is positional, not biographical.** A ΩZaTa coordinate
-  triple `(Ω, Za, Ta)` is the only persistent identifier. No names, emails,
+- **Steward identity is positional, not biographical.** An ΩaZaTa coordinate
+  triple `(Ωa, Za, Ta)` is the only persistent identifier. No names, emails,
   government IDs, physical addresses, or biometrics are stored or transmitted
   across the wire.
 - **Pulse payloads contain only economic geometry.** `scarcity_domain`,
@@ -69,12 +75,32 @@ A scrape-now-crack-later (SNCL) attack works as follows:
 
 | Layer | Mitigation | Rationale |
 |---|---|---|
-| **Identity** | ΩZaTa position contains no PII by design | Cracking the hash reveals a geometric coordinate, not a person |
+| **Identity** | ΩaZaTa position contains no PII by design | Cracking the hash reveals a geometric coordinate, not a person |
 | **Keys** | Steward keys rotate at each checkpoint via checkpoint hash | A cracked old key is only valid for that checkpoint window |
 | **Pulses** | Pulse payloads carry no PII (see Principle 1) | Nothing sensitive to recover even if decrypted |
 | **Holographic boundary** | Only boundary-observable values are published | Interior steward state is never transmitted in full |
-| **Asymptotic auth (v2)** | Identity hardens over time via attractor convergence | Early sparse history has wide uncertainty; forging a mature identity requires replicating the full developmental trajectory |
+| **Hidden witness** | The steward's seed is not a stored secret — it is a topological structure outside the steward's own spacetime (see `docs/seed-structure.md` §9) | There is no finite object to scrape that constitutes the key |
+| **Asymptotic auth** | Identity hardens over time via attractor convergence | Early sparse history has wide uncertainty; forging a mature identity requires replicating the full developmental trajectory |
 | **Recovery taxonomy** | Compromised identity may be reclaimed by trajectory witness or voluntarily abandoned | Preferred recovery evicts attacker without surrendering accumulated trust |
+
+### Anti-extraction property
+
+The deepest mitigation against SNCL is structural, not cryptographic. A
+conventional key is a finite object that can be harvested and later cracked.
+The steward's hidden witness is a keyhole geodesic threading a recursive snark
+hierarchy — a topological structure that cannot be fully named, held, or copied.
+
+> **There is no finite object to scrape that constitutes the key.**
+
+This is formally defined as the **anti-extraction property** in
+`docs/seed-structure.md` §9. It is the reason the protocol can remain
+SNCL-resistant even if every cryptographic primitive currently in use is
+eventually broken: the object an adversary would need to crack does not exist
+in extractable form.
+
+Cryptographic primitives (see Principle 7) remain important for session
+security and key rotation. The anti-extraction property is the long-horizon
+guarantee that operates beneath them.
 
 ### What is intentionally public
 
@@ -84,7 +110,7 @@ are not considered sensitive:
 - Checkpoint hashes and indices
 - Pulse `scarcity_domain` and `value_add` (aggregate economic signal)
 - Steward `trust_resource` balance (economic participation signal)
-- Node ΩZaTa reference position
+- Node ΩaZaTa reference position
 
 ### What must never be public
 
@@ -92,13 +118,13 @@ are not considered sensitive:
 - Steward registration metadata (time of first registration, IP address)
 - Free-text pulse descriptions in aggregate queryable form (descriptions
   are per-steward readable only, not mesh-wide queryable)
-- Any mapping between ΩZaTa coordinates and real-world identity
+- Any mapping between ΩaZaTa coordinates and real-world identity
 
 ---
 
-## 3. ΩZaTa Coordinates Are Topologically Unique, Approximate, and Voluntarily Mutable
+## 3. ΩaZaTa Coordinates Are Topologically Unique, Approximate, and Voluntarily Mutable
 
-**Principle:** No two stewards or nodes can occupy the same ΩZaTa coordinate.
+**Principle:** No two stewards or nodes can occupy the same ΩaZaTa coordinate.
 This is a topological guarantee, not an administrative one — the geometry of
 the space makes simultaneous occupation impossible. Coordinates are however
 always approximate, continuously evolving, and can be voluntarily changed at
@@ -106,7 +132,7 @@ minimal cost.
 
 ### Uniqueness
 
-ΩZaTa coordinates are unique by construction. The spiral geometry of the space
+ΩaZaTa coordinates are unique by construction. The spiral geometry of the space
 does not permit two distinct entities to occupy the same position simultaneously
 — any apparent collision is a measurement approximation, not a true overlap.
 This is the foundation of the protocol's Sybil resistance: you cannot create a
@@ -116,7 +142,7 @@ duplicate identity because the space does not have room for duplicates.
 
 A steward's coordinate is never known exactly — it is always an approximation
 of a continuously evolving position. Over time, the pulse history traces a
-*geodesic* through ΩZaTa space: a trajectory that is:
+*geodesic* through ΩaZaTa space: a trajectory that is:
 
 - **Unpredictable in advance** — future position cannot be determined without
   living the pulse history that produces it
@@ -164,13 +190,13 @@ that the cost of sustained impersonation grows without bound.
 
 ## 4. Geometry Encodes Behaviour, Not Belief
 
-**Principle:** The ΩZaTa coordinate system encodes a steward's *economic
+**Principle:** The ΩaZaTa coordinate system encodes a steward's *economic
 behaviour pattern* — the interference signature of their pulse history. It
 does not encode ideology, affiliation, demographics, or any categorical
 label about the steward as a person.
 
 This means:
-- Two stewards at near-identical ΩZaTa positions are economically equivalent
+- Two stewards at near-identical ΩaZaTa positions are economically equivalent
   to the mesh regardless of who they are.
 - Proximity and constructive interference are purely geometric — they
   describe alignment of economic contribution patterns, not social or
@@ -224,8 +250,9 @@ All hash function references must go through `app/services/crypto.py`
 (to be created) so they can be swapped to SHA-3, BLAKE3, or
 post-quantum alternatives as standards evolve.
 
-This is the primary long-term mitigation against SNCL attacks on the
-cryptographic layer specifically.
+Cryptographic agility is the session-layer mitigation against SNCL attacks.
+The anti-extraction property (Principle 2) is the structural mitigation that
+operates beneath it — the two are complementary, not competing.
 
 ---
 
@@ -246,15 +273,17 @@ This is the protocol's anti-coercion property.
 ## Appendix: SNCL Attack Surface Summary
 
 ```
-Scrape target          Sensitive?   Mitigation
-─────────────────────────────────────────────────────────────────────
-Checkpoint hashes      No           Designed to be public
-Pulse domains/values   No           Aggregate economic signal only
-Steward trust balance  No           Public participation metric
-Steward ΩZaTa coords   Low          Topologically unique; no PII mapping
-pm_ API keys           Yes          Rotate per checkpoint; hash only
-Pulse descriptions     Medium       Per-steward read only; not queryable
-Registration metadata  Yes          Never leaves node (Principle 1)
-Real-world identity    N/A          Never collected
-Local admin data       Operator     Node operator responsibility only
+Scrape target             Sensitive?   Mitigation
+──────────────────────────────────────────────────────────────────────────────
+Checkpoint hashes         No           Designed to be public
+Pulse domains/values      No           Aggregate economic signal only
+Steward trust balance     No           Public participation metric
+Steward ΩaZaTa coords     Low          Topologically unique; no PII mapping
+pm_ API keys              Yes          Rotate per checkpoint; hash only
+Pulse descriptions        Medium       Per-steward read only; not queryable
+Registration metadata     Yes          Never leaves node (Principle 1)
+Real-world identity       N/A          Never collected
+Steward hidden witness    N/A          Not a finite object; anti-extraction
+                                       property (seed-structure.md §9)
+Local admin data          Operator     Node operator responsibility only
 ```

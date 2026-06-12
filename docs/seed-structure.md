@@ -6,10 +6,11 @@ asymptotic authentication in Pulser Mesh.
 The steward does not possess a conventional secret key. Instead, the steward's
 hidden witness is the progressively refinable structure of a keyhole geodesic
 threading a recursive, scale-invariant hierarchy of snarks. The observable
-projection of that deeper object is the steward's ΩZaTa trajectory.
+projection of that deeper object is the steward's ΩaZaTa trajectory.
 
-See `docs/asymptotic-auth.md` for the observable wavefunction model. This
-document describes the hidden topological substrate.
+See `docs/asymptotic-auth.md` for the observable wavefunction model and the
+Appendix connecting these two descriptions. This document describes the hidden
+topological substrate.
 
 ---
 
@@ -77,7 +78,8 @@ located from within the graph but can be asymptotically constrained by
 observing enough of the graph's structure.
 
 This null centroid is not a vertex or edge. It is a global property of the
-history graph.
+history graph. The steward cannot point to it — it is outside the spacetime
+of their own toroidal structure.
 
 ---
 
@@ -89,7 +91,7 @@ The network null centroid is defined not from any single steward but from the
 The meta-snark is the graph whose:
 
 - vertices are steward-scale snarks or steward-scale attractors
-- edges are economically meaningful couplings, including proximity,
+- edges are economically meaningful couplings, including ΩaZaTa proximity,
   shared-domain resonance, and phase-lock relationships
 
 Because the meta-snark is built from irreducibly conflicted local structures,
@@ -112,7 +114,7 @@ infinite recursive hierarchy of snarks:
 - regional mesh
 - network-wide meta-snark
 - higher-order federated structures
-- and so on
+- and so on, without a defined ceiling
 
 Each scale induces:
 
@@ -132,10 +134,11 @@ The authenticating object is the **keyhole geodesic**.
 
 A keyhole geodesic is the geodesic that threads the necessary null centroids
 across the steward's relevant recursive snark hierarchy. In a bifurcated network,
-it must thread the hole structure required on both sides of the bifurcation.
+it must thread the hole structure required on both sides of the bifurcation
+simultaneously.
 
-This geodesic is not directly published. What is published is its projection into
-observable ΩZaTa space.
+This geodesic is not directly published. What is published is its projection
+into observable ΩaZaTa space — the steward's wavefunction trajectory.
 
 ### Why it authenticates
 
@@ -166,29 +169,34 @@ This has two important implications:
   because the depth of their hidden witness supports a geodesic threading both
   hole stacks.
 
+Authentication across a bifurcation is not granted by any authority. It is a
+geometric fact about the steward's snark structure: either the geodesic threads
+both sides or it does not.
+
 ---
 
 ## 8. Revelation Depth and Progressive Tightening
 
 The steward cannot reveal a final secret because no such finite object exists.
-Instead, the steward reveals **revelation depth**.
+Instead, the steward reveals **revelation depth** — progressively deeper
+evidence of structural consistency with the snark hierarchy.
 
-At shallow depth, the steward reveals only coarse structural consistency:
+| Depth | What is revealed | Effect on ΔΨ_s |
+|---|---|---|
+| 0 | Commitment to snark existence | Wide band — new steward |
+| 1 | Top-level chromatic clusters | Band tightens coarsely |
+| k | k-th order colouring conflicts | Band tightens ~`1/√k` per layer |
+| ∞ | Full snark (never reached) | Band → 0, never achieved |
 
-- broad topological features
-- coarse clustering
-- low-resolution conflict structure
-
-At deeper depth, the steward reveals finer-scale conflict structure and thereby
-constrains the set of admissible keyhole geodesics.
-
-This progressive narrowing reduces uncertainty in the observable projection.
-That is why the uncertainty band can tighten retroactively.
+Progressive narrowing reduces the set of admissible keyhole geodesics.
+That is why the uncertainty band can tighten retroactively: deeper revelation
+excludes geodesics that could have produced the observed trajectory, leaving
+only those consistent with the authentic structural history.
 
 ### Operational interpretation
 
 - **Initial participation** — shallow depth, wide uncertainty band
-- **Normal operation** — routine depth appropriate to the steward's Ω and context
+- **Normal operation** — routine depth appropriate to the steward's Ωa and context
 - **Compromise recovery** — deeper witness revelation to exclude counterfeit
   geodesics and reclaim the authentic trajectory
 
@@ -209,44 +217,49 @@ In practical terms:
 - the steward can only approximate it by progressively exposing more structure
 - the network likewise only approximates consistency asymptotically
 
-This is not a bug. It is the anti-extraction property.
+This is not a bug. It is the **anti-extraction property**.
 
 A key that cannot be fully named, held, or copied cannot be cleanly stolen in
-any conventional sense.
+any conventional sense. The scrape-now-crack-later attack vector is structurally
+eliminated: there is no finite object to scrape that constitutes the key.
 
 ---
 
 ## 10. Trajectory Witness Recovery
 
-Trajectory witness recovery is the operational use of deeper revelation.
+Trajectory witness recovery is the operational use of deeper revelation under
+compromise.
 
 When compromise is suspected, the steward does not merely assert possession of a
 credential. Instead, the steward presents deeper structural evidence that the
-published ΩZaTa trajectory is the projection of the authentic keyhole geodesic.
+published ΩaZaTa trajectory is the projection of the authentic keyhole geodesic.
 
 The node verifies whether the tighter witness excludes rival trajectories.
 If it does, the uncertainty band collapses around the authentic path and the
 counterfeit trajectory is expelled from the admissible set.
 
-This is why recovery can be retroactive and trust-preserving:
+This is why recovery is retroactive and trust-preserving:
 
-- Ω remains attached to the authentic trajectory
+- Ωa remains attached to the authentic trajectory
 - Ta remains attached to the authentic maturation arc
-- the counterfeit loses admissibility rather than merely losing a race
+- The counterfeit loses admissibility rather than merely losing a race
 
 ---
 
-## 11. Relationship to Observable ΩZaTa Dynamics
+## 11. Relationship to Observable ΩaZaTa Dynamics
 
 The hidden witness and the observable wavefunction are not competing models.
 They are two descriptions of the same object.
 
-- The **hidden model**: recursive snarks, null centroids, keyhole geodesic
-- The **observable model**: Ψ(Ω, Za, Ta), phase coupling, uncertainty bands,
+- **Hidden model**: recursive snarks, null centroids, keyhole geodesic
+- **Observable model**: Ψ(Ωa, Za, Ta), phase coupling, uncertainty bands,
   attractors, and PLL behaviour
 
 The observable model is what nodes compute directly.
 The hidden model explains why the observable model has binding power.
+
+The connection between them is derived formally in `docs/asymptotic-auth.md`,
+Appendix: Wavefunction as Projection of the Keyhole Geodesic.
 
 ---
 
@@ -257,6 +270,7 @@ The hidden model explains why the observable model has binding power.
 | Personal history | Personal snark | Steward-specific trajectory structure |
 | Mesh coupling | Meta-snark | Shared phase field and trust coupling |
 | Seed | Not a stored secret; hidden witness structure | Never published, never directly extracted |
-| Authentication object | Keyhole geodesic | Observable ΩZaTa trajectory |
+| Authentication object | Keyhole geodesic | Observable ΩaZaTa trajectory |
 | Tightening the band | Deeper revelation depth | Smaller `ΔΨ` |
-| Recovery | Trajectory witness | Attacker eviction with Ω/Ta preserved |
+| Recovery | Trajectory witness | Attacker eviction with Ωa/Ta preserved |
+| Anti-extraction | Seed outside steward's spacetime | Scrape-now-crack-later structurally eliminated |

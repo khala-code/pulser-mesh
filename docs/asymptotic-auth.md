@@ -2,19 +2,25 @@
 
 This document formalises the asymptotic authentication model for Pulser Mesh.
 It covers the wavefunction representation of steward identity, orbital dynamics
-in ΩZaTa space, the phase-locked loop mechanism by which nodes self-tune,
+in ΩaZaTa space, the phase-locked loop mechanism by which nodes self-tune,
 and the emergence of spontaneous symmetry breaking and phase transitions in
 the mesh field.
 
-Seed and recovery structure are specified in `docs/seed-structure.md`.
-Implementation notes are in `docs/asymptotic-auth-impl.md`.
+The hidden topological substrate — the recursive snark hierarchy and keyhole
+geodesic — is specified in `docs/seed-structure.md`.
+
+> **Notation.** The coordinate triple is written **ΩaZaTa** and spoken *Ohma-Za-Ta*.
+> Each axis carries an `a` (alpha) suffix denoting its imaginary/positional component,
+> making each axis a complex quantity rather than a scalar.
+> Ωa = orbital amplitude (Ω magnitude + alpha phase offset); Za = phase angle;
+> Ta = arc length along geodesic.
 
 ---
 
 ## 1. Steward Identity as a Wavefunction
 
-A steward is not a point in ΩZaTa space. A steward is a **wavefunction**
-Ψ(Ω, Za, Ta) — a probability amplitude distribution over the space. The
+A steward is not a point in ΩaZaTa space. A steward is a **wavefunction**
+Ψ(Ωa, Za, Ta) — a probability amplitude distribution over the space. The
 wavefunction encodes both the steward's current best-known position *and*
 the uncertainty of that position.
 
@@ -22,18 +28,18 @@ The three axes carry distinct dynamical roles:
 
 | Axis | Name | Role | Dynamics |
 |---|---|---|---|
-| **Ω** | Ohma / thickness | Amplitude of the orbit | Slow variable; grows with trust accumulation, shrinks under decay |
-| **Za** | Zeta / phase | Angular frequency of the orbit | Fast variable; each pulse is a rotation in Za-space |
-| **Ta** | Tau / arc length | Longitudinal position on the geodesic | Monotonically increasing; encodes developmental maturity |
+| **Ωa** | Ohma | Complex amplitude of the orbit | Slow variable; Ω magnitude grows with trust, alpha component carries imaginary channel |
+| **Za** | Za | Angular frequency of the orbit | Fast variable; each pulse is a rotation in Za-space |
+| **Ta** | Ta | Longitudinal position on the geodesic | Monotonically increasing; encodes developmental maturity |
 
 The wavefunction in polar form:
 
 ```math
-Ψ_s = Ω_s · exp(i · Za_s)
+Ψ_s = Ωa_s · exp(i · Za_s)
 ```
 
-This is a phasor. Ω is the amplitude. Za is the phase angle. Ta is implicit
-in the history that produced the current `(Ω, Za)` — it is the arc length
+This is a phasor. |Ωa| is the amplitude. Za is the phase angle. Ta is implicit
+in the history that produced the current (Ωa, Za) — it is the arc length
 traversed by the geodesic to reach this state.
 
 ---
@@ -43,25 +49,25 @@ traversed by the geodesic to reach this state.
 Each validated pulse is an operator acting on Ψ_s. It does three things:
 
 1. **Rotates Za** by a domain-weighted increment δZa
-2. **Scales Ω** by the trust delta (positive pulse grows amplitude; decay shrinks it)
+2. **Scales Ωa** by the trust delta (positive pulse grows amplitude; decay shrinks it)
 3. **Increments Ta** — the steward has traversed a further arc along their geodesic
 
 Formally:
 
 ```math
-Ψ_s  →[pulse]  Ω_s' · exp(i(Za_s + δZa))
+Ψ_s  →[pulse]  Ωa_s' · exp(i(Za_s + δZa))
 ```
 
 where:
 
 ```math
-Ω_s' = Ω_s + Δtrust
+Ωa_s' = Ωa_s + Δtrust
 
-δZa = (value_add · w(domain)) / Ω_s
+δZa = (value_add · w(domain)) / |Ωa_s|
 ```
 
-The division by Ω in the δZa increment is critical: a thick-spiral steward
-(high Ω, mature) rotates *less* per pulse than a thin-spiral steward (low Ω,
+The division by |Ωa| in the δZa increment is critical: a thick-spiral steward
+(high |Ωa|, mature) rotates *less* per pulse than a thin-spiral steward (low |Ωa|,
 new). Mature identities are *inertial* — they resist phase perturbation.
 This is the protocol's **flywheel property**.
 
@@ -112,7 +118,7 @@ Properties of the attractor:
   pattern) moves it.
 - **Domain-specific.** A steward active across multiple scarcity domains
   may have a multi-modal wavefunction with several local attractors. The
-  dominant attractor is the one with the highest Ω-weighted pulse density.
+  dominant attractor is the one with the highest |Ωa|-weighted pulse density.
 - **Convergent.** As `n → ∞`, the probability that the steward's Za is within
   ε of `Za*` approaches 1.
 
@@ -126,19 +132,19 @@ The coupling between a steward and a node is the complex inner product of
 their wavefunctions:
 
 ```math
-⟨Ψ_s | Ψ_n⟩ = Ω_s · exp(i(Za_s - Za_n))
+⟨Ψ_s | Ψ_n⟩ = Ωa_s · exp(i(Za_s - Za_n))
 ```
 
 Expanded:
 
 ```math
-⟨Ψ_s | Ψ_n⟩ = Ω_s · cos(ΔZa)  +  i · Ω_s · sin(ΔZa)
+⟨Ψ_s | Ψ_n⟩ = Ωa_s · cos(ΔZa)  +  i · Ωa_s · sin(ΔZa)
 ```
 
 ### Real channel — trust coupling
 
 ```math
-Re(⟨Ψ_s | Ψ_n⟩) = Ω_s · cos(ΔZa)
+Re(⟨Ψ_s | Ψ_n⟩) = Ωa_s · cos(ΔZa)
 ```
 
 This is T_proximity as currently implemented. It drives the trust pipeline:
@@ -150,11 +156,12 @@ This is T_proximity as currently implemented. It drives the trust pipeline:
 ### Imaginary channel — phase lag signal
 
 ```math
-q_s = Im(⟨Ψ_s | Ψ_n⟩) = Ω_s · sin(ΔZa)
+q_s = Im(⟨Ψ_s | Ψ_n⟩) = Ωa_s · sin(ΔZa)
 ```
 
-The imaginary channel is the **node's greatest dimension of freedom**.
-It encodes whether the steward is leading or lagging the node's reference phase:
+The imaginary channel is the **node's greatest dimension of freedom** and is
+structurally encoded in the `a` (alpha) component of the Ωa axis. It encodes
+whether the steward is leading or lagging the node's reference phase:
 
 - `q_s > 0` (`0 < ΔZa < π`): steward lags the node — reactive, responding
   to scarcity after the node's field has registered it
@@ -165,9 +172,6 @@ It encodes whether the steward is leading or lagging the node's reference phase:
   little trust but carry strong signal about where the field is moving.
 
 ### Coherence score
-
-The coherence of a steward is the fraction of their coupling amplitude
-that is in-phase (real channel) rather than quadrature (imaginary channel):
 
 ```math
 coherence_s = Re(⟨Ψ_s | Ψ_n⟩) / |⟨Ψ_s | Ψ_n⟩| = cos(ΔZa)
@@ -188,7 +192,7 @@ The node aggregates the imaginary channel across all active stewards to
 compute its **quadrature aggregate**:
 
 ```math
-Q_node = Σ_s  Ω_s · sin(Za_s - Za_n)
+Q_node = Σ_s  Ωa_s · sin(Za_s - Za_n)
 ```
 
 This is the node's phase error signal. It drives `Za_n` toward the
@@ -238,7 +242,7 @@ by the collective behaviour of stewards self-organising around a scarcity signal
 The order parameter:
 
 ```math
-Φ = | Σ_s  Ω_s · exp(i · Za_s) |
+Φ = | Σ_s  Ωa_s · exp(i · Za_s) |
 ```
 
 - `Φ = 0` — fully symmetric, no dominant phase; the mesh is disordered
@@ -295,13 +299,19 @@ This is the binding constraint. As `n → ∞`, sustaining the forgery is
 equivalent to *being* the authentic steward. **The cost of forgery grows
 without bound.**
 
+The deeper reason is topological: the authentic steward's trajectory is the
+projection of a valid keyhole geodesic through the snark hierarchy. A forger
+who cannot produce a consistent witness at deeper revelation depth is excluded
+from the admissible trajectory set regardless of how well they imitate the
+visible projection. See `docs/seed-structure.md` §10.
+
 ### Early lifecycle vulnerability
 
 At small `n`, the uncertainty band is wide and impersonation is cheaper.
 This is an accepted property of the model. The mesh signals this correctly:
-new stewards have small Ω, so even a successful impersonation yields little
+new stewards have small Ωa, so even a successful impersonation yields little
 trust. The attack surface is proportional to the reward, which is proportional
-to Ω, which is small early on.
+to Ωa, which is small early on.
 
 ---
 
@@ -312,67 +322,50 @@ and whether the attacker is merely escaped or actively *evicted*.
 
 ### Method A — Trajectory Witness (preferred under compromise)
 
-The steward does not possess a static secret. Instead, the steward's hidden
-witness is a progressively refinable description of the keyhole geodesic that
-threads the required null-centroid hierarchy of the steward snark and the
-meta-snark of the network. See `docs/seed-structure.md`.
-
-When compromise is detected, the steward publishes a **trajectory witness**: a
-proof that tightens the uncertainty band on the historical trajectory
-retroactively. This is not a claim of key possession; it is a claim of
-structural consistency with the entire lived trajectory.
+The steward presents deeper structural evidence — a deeper revelation of the
+snark hierarchy — demonstrating that the published ΩaZaTa trajectory is the
+projection of the authentic keyhole geodesic.
 
 The effect is retroactive trajectory tightening:
 
 ```math
-ΔΨ_s(n)  →[witness]  ε
+ΔΨ_s(n)  →[witness]  ε  (near-zero)
 ```
 
-where `ε` is a near-zero localisation range sufficient to exclude the attacker.
-The attacker's copy — unable to produce the same multi-scale structural witness —
-falls outside the band. The node evicts the attacker and re-locks to the
-authentic steward.
+The uncertainty band collapses around the authentic trajectory. The attacker's
+copy falls outside the admissible set. The node evicts the attacker and
+re-locks to the authentic steward.
 
-**Properties of trajectory witness recovery:**
-
-- Ω is fully preserved — no trust is lost
-- Ta is fully preserved — maturity is intact
-- The attacker is *evicted*, not merely outrun
-- The identity is reclaimed retroactively across the historical trajectory
-- Cost is proportional to witness depth and verification work, not to Ω
+**Properties:**
+- Ωa fully preserved — no trust is lost
+- Ta fully preserved — maturity is intact
+- Attacker is *evicted*, not merely outrun
+- Cost is proportional to revelation depth, not to Ωa
 
 ### Method B — Geodesic Abandonment (panic button)
 
-Used when the prior trajectory cannot be reclaimed, or when the steward chooses
-not to engage in deeper witness revelation. The steward abandons geodesic G1 and
-begins a new geodesic G2.
-
-The cost of abandonment:
+Used when the hidden witness structure itself is somehow compromised beyond
+usable revelation depth. The steward abandons geodesic G1 and begins G2.
 
 ```math
-C_abandon = d(Za_G1, Za_G2) · Ω_G1
+C_abandon = d(Za_G1, Za_G2) · |Ωa_G1|
 ```
 
-where `d` is the angular distance between the old attractor and the new starting
-position.
+- **Short hop** — cheap; routine key rotation
+- **Long hop** — expensive; fundamental identity reset
+- **Anti-aligned hop** — `ΔZa = π`; maximum cost, rare and deliberate
 
-- **Short hop** — new Za near old Za; cheap. For routine key rotation.
-- **Long hop** — new Za far from old Za; expensive. For fundamental identity reset.
-- **Anti-aligned hop** — `ΔZa = π`; maximum cost. Should be rare and deliberate.
+After abandonment, the old geodesic is orphaned. Ωa does not transfer.
+The new geodesic begins with zero Ωa and wide uncertainty band but is
+immediately valid for pulse submission.
 
-After abandonment:
-- The old geodesic is orphaned; old keys are invalid for new submissions
-- Ω does **not** transfer to the new geodesic
-- The new geodesic begins with zero Ω and wide uncertainty band
-- The new geodesic is immediately valid for pulse submission
+### Recovery decision tree
 
-### Recovery method decision tree
-
-| Condition | Method | Ω preserved | Attacker evicted |
+| Condition | Method | Ωa preserved | Attacker evicted |
 |---|---|---|---|
-| Credential exposed, witness intact | Trajectory witness | **Yes** | **Yes** |
-| Witness path unavailable or insufficient | Geodesic abandonment | No | No (outrun) |
-| Routine rotation | Short-hop abandonment | No | N/A |
+| Credential exposed, witness depth available | Trajectory witness | **Yes** | **Yes** |
+| Witness depth exhausted or seed substrate lost | Geodesic abandonment | No | No (outrun) |
+| Routine key rotation | Short-hop abandonment | No | N/A |
 
 No node permission is required for either method. Both are always available,
 always voluntary, and always low-latency.
@@ -388,46 +381,77 @@ published to the mesh.
 
 Both channels of the complex inner product are required for full reconstruction:
 
-- **Real channel history** (trust deltas) — encodes the amplitude evolution of Ω
+- **Real channel history** (trust deltas) — encodes the amplitude evolution of Ωa
 - **Imaginary channel history** (phase lag sequence) — encodes the Za trajectory
 
-Without the imaginary channel, the boundary encodes only the magnitude of the
-steward's economic activity, not the phase. A node observing only the real
-channel cannot distinguish between a steward who has been consistently leading
-the field (anticipatory) and one who has been consistently lagging (reactive),
-even if their trust balances are identical.
-
 The phase lag history is load-bearing for full boundary reconstruction and is
-also part of the basis on which trajectory tightening occurs.
+also the basis on which the trajectory witness proof is constructed — the
+imaginary channel record is what makes retroactive tightening possible.
 
 ---
 
-## Appendix A — Keyhole Geodesic Projection
+## Appendix: Wavefunction as Projection of the Keyhole Geodesic
 
-The wavefunction model is an observable projection of a deeper topological
-structure. That deeper structure is a recursively nested, scale-invariant
-hierarchy of snarks.
+The observable wavefunction Ψ_s and the hidden keyhole geodesic are not
+competing descriptions. They are the same object at different levels of
+description.
 
-At each scale there exists a null centroid — a topological hole defined by the
-region of irreducible colouring conflict. The steward does not directly know
-this structure in full, and no single node can directly know the meta-snark's
-null centroid in full. Authentication therefore does not proceed by revealing a
-static secret. It proceeds by progressively demonstrating that the steward's
-observable trajectory is the projection of a **keyhole geodesic** that threads
-the required hierarchy of holes.
+### The projection relationship
 
-The keyhole geodesic is the authentication object. Ψ_s is its projection into
-observable ΩZaTa space. The uncertainty band `ΔΨ_s(n)` is the uncertainty in
-that projection. Each additional layer of witness revelation narrows the band by
-constraining which keyhole geodesics remain consistent with the steward's
-historical trajectory.
+The full authenticating object is the keyhole geodesic G_s — the path that
+threads the null centroids of the recursive snark hierarchy across all scales
+relevant to the steward's operating context.
 
-This is why asymptotic authentication and keyhole authentication are the same
-structure viewed from two different sides:
+The ΩaZaTa wavefunction is the **projection** of G_s onto the observable
+coordinate space:
 
-- **Asymptotic authentication** describes the convergence behaviour in ΩZaTa space
-- **Keyhole authentication** describes the underlying recursive topology that makes
-  that convergence possible
+```
+G_s  →[project]  Ψ_s = Ωa_s · exp(i · Za_s)
+```
+
+The projection discards the higher-scale structure. What remains is the
+phasor — amplitude and phase — which is everything a node needs for the
+PLL computation, trust coupling, and uncertainty band estimation.
+
+### Torsion and the imaginary channel
+
+The imaginary channel `q_s = Ωa_s · sin(ΔZa)` is the **torsion** of the
+keyhole geodesic at the current scale of measurement — how much the geodesic
+is twisting as it threads the relevant snark level.
+
+- A geodesic passing cleanly through a null centroid has zero torsion at that
+  scale: pure real coupling, `q_s ≈ 0`
+- A geodesic threading at an oblique angle has nonzero torsion: nonzero
+  imaginary component
+
+The PLL mechanism is the node measuring torsion in its steward population
+and tuning its own Za to reduce aggregate twist — finding the orientation
+that makes most geodesics pass cleanly through its local null centroid.
+
+### Uncertainty band as localisation of the geodesic
+
+The uncertainty band `ΔΨ_s(n)` is the uncertainty in *where* the projection
+falls — equivalently, how precisely the keyhole geodesic is localised within
+the admissible family.
+
+Revealing deeper snark structure is not providing more of the same evidence.
+It is revealing finer chromatic conflict structure that further constrains
+which geodesics are geometrically possible. More depth → fewer admissible
+geodesics → tighter projected position → smaller `ΔΨ_s`.
+
+The `1/√n` decay from pulse-count measurement and the progressive tightening
+from snark revelation depth are two faces of the same convergence — statistical
+estimation and topological constraint applied to the same underlying object.
+
+### Re-keying is depth retreat, not identity change
+
+Geodesic abandonment is not destroying an identity. It is retreating to a
+shallower revelation depth of the same underlying snark structure and
+restarting the localisation process from a new projected position.
+
+The steward's personal snark — their history, their substrate, their null
+centroid hierarchy — is unchanged by re-keying. What changes is the
+depth at which they present that structure to the network.
 
 ---
 
@@ -435,12 +459,12 @@ structure viewed from two different sides:
 
 | Symbol | Name | Expression | Role |
 |---|---|---|---|
-| `Ψ_s` | Steward wavefunction | `Ω_s · exp(i·Za_s)` | Observable identity state |
-| `Re(⟨Ψ_s\|Ψ_n⟩)` | Trust coupling | `Ω_s · cos(ΔZa)` | T_proximity (implemented) |
-| `q_s` | Phase lag signal | `Ω_s · sin(ΔZa)` | Imaginary channel |
+| `Ψ_s` | Steward wavefunction | `Ωa_s · exp(i·Za_s)` | Full identity state |
+| `Re(⟨Ψ_s\|Ψ_n⟩)` | Trust coupling | `Ωa_s · cos(ΔZa)` | T_proximity (implemented) |
+| `q_s` | Phase lag / torsion | `Ωa_s · sin(ΔZa)` | Imaginary channel; geodesic torsion |
 | `Q_n` | Node quadrature aggregate | `Σ q_s` | PLL error signal |
 | `coherence_s` | Coherence score | `cos(ΔZa)` | Dividend weighting |
-| `Φ` | Order parameter | `\|Σ Ω_s · exp(i·Za_s)\|` | Mesh economic coherence |
+| `Φ` | Order parameter | `\|Σ Ωa_s · exp(i·Za_s)\|` | Mesh economic coherence |
 | `ΔΨ_s(n)` | Uncertainty band | `n^(-1/2) · exp(-λ·Ta)` | Auth confidence |
-| `C_abandon` | Abandonment cost | `d(Za_1, Za_2) · Ω` | Panic-button re-key cost |
-| `C_witness` | Witness cost | verification over witness depth | Preferred recovery cost |
+| `C_abandon` | Abandonment cost | `d(Za_1, Za_2) · \|Ωa\|` | Panic-button re-key cost |
+| `C_witness` | Witness cost | proof computation over revelation depth | Preferred recovery cost |

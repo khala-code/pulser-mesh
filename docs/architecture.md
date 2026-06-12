@@ -15,8 +15,8 @@ stored in a node database, or included in a pulse payload. The protocol encodes
 
 ### What this means in practice
 
-- **Steward identity is positional, not biographical.** An OaZaTa coordinate
-  triple `(Oa, Za, Ta)` is the only persistent identifier. No names, emails,
+- **Steward identity is positional, not biographical.** A ΩZaTa coordinate
+  triple `(Ω, Za, Ta)` is the only persistent identifier. No names, emails,
   government IDs, physical addresses, or biometrics are stored or transmitted
   across the wire.
 - **Pulse payloads contain only economic geometry.** `scarcity_domain`,
@@ -69,12 +69,12 @@ A scrape-now-crack-later (SNCL) attack works as follows:
 
 | Layer | Mitigation | Rationale |
 |---|---|---|
-| **Identity** | OaZaTa position contains no PII by design | Cracking the hash reveals a geometric coordinate, not a person |
+| **Identity** | ΩZaTa position contains no PII by design | Cracking the hash reveals a geometric coordinate, not a person |
 | **Keys** | Steward keys rotate at each checkpoint via checkpoint hash | A cracked old key is only valid for that checkpoint window |
 | **Pulses** | Pulse payloads carry no PII (see Principle 1) | Nothing sensitive to recover even if decrypted |
 | **Holographic boundary** | Only boundary-observable values are published | Interior steward state is never transmitted in full |
 | **Asymptotic auth (v2)** | Identity hardens over time via attractor convergence | Early sparse history has wide uncertainty; forging a mature identity requires replicating the full developmental trajectory |
-| **Geodesic re-keying** | Compromised identity can be voluntarily abandoned at any time | Minimal cost to re-authenticate from a new trajectory; see Principle 3 |
+| **Recovery taxonomy** | Compromised identity may be reclaimed by trajectory witness or voluntarily abandoned | Preferred recovery evicts attacker without surrendering accumulated trust |
 
 ### What is intentionally public
 
@@ -84,7 +84,7 @@ are not considered sensitive:
 - Checkpoint hashes and indices
 - Pulse `scarcity_domain` and `value_add` (aggregate economic signal)
 - Steward `trust_resource` balance (economic participation signal)
-- Node OaZaTa reference position
+- Node ΩZaTa reference position
 
 ### What must never be public
 
@@ -92,13 +92,13 @@ are not considered sensitive:
 - Steward registration metadata (time of first registration, IP address)
 - Free-text pulse descriptions in aggregate queryable form (descriptions
   are per-steward readable only, not mesh-wide queryable)
-- Any mapping between OaZaTa coordinates and real-world identity
+- Any mapping between ΩZaTa coordinates and real-world identity
 
 ---
 
-## 3. OaZaTa Coordinates Are Topologically Unique, Approximate, and Voluntarily Mutable
+## 3. ΩZaTa Coordinates Are Topologically Unique, Approximate, and Voluntarily Mutable
 
-**Principle:** No two stewards or nodes can occupy the same OaZaTa coordinate.
+**Principle:** No two stewards or nodes can occupy the same ΩZaTa coordinate.
 This is a topological guarantee, not an administrative one — the geometry of
 the space makes simultaneous occupation impossible. Coordinates are however
 always approximate, continuously evolving, and can be voluntarily changed at
@@ -106,7 +106,7 @@ minimal cost.
 
 ### Uniqueness
 
-OaZaTa coordinates are unique by construction. The spiral geometry of the space
+ΩZaTa coordinates are unique by construction. The spiral geometry of the space
 does not permit two distinct entities to occupy the same position simultaneously
 — any apparent collision is a measurement approximation, not a true overlap.
 This is the foundation of the protocol's Sybil resistance: you cannot create a
@@ -116,7 +116,7 @@ duplicate identity because the space does not have room for duplicates.
 
 A steward's coordinate is never known exactly — it is always an approximation
 of a continuously evolving position. Over time, the pulse history traces a
-*geodesic* through OaZaTa space: a trajectory that is:
+*geodesic* through ΩZaTa space: a trajectory that is:
 
 - **Unpredictable in advance** — future position cannot be determined without
   living the pulse history that produces it
@@ -129,27 +129,24 @@ This is the asymptotic authentication model: identity is not a static credential
 but a convergent trajectory. The longer the history, the narrower the
 uncertainty band, and the harder the identity is to forge.
 
-### Voluntary re-keying (geodesic reset)
+### Voluntary recovery and re-authentication
 
 If a steward's coordinate is compromised — whether through a successful
 impersonation attack, a suspected breach, or simply at the steward's own
-discretion — the steward may voluntarily abandon their current trajectory and
-begin a new geodesic from a fresh coordinate.
+discretion — the steward may voluntarily tighten the uncertainty band on their
+existing trajectory or begin a new geodesic from a fresh coordinate.
 
-Properties of geodesic re-keying:
+Properties of recovery:
 
-- **Minimal cost.** Re-keying does not require proving the old identity or
-  obtaining permission from the node. The old trajectory is simply abandoned.
+- **Trajectory witness is preferred when possible.** If the steward can prove
+  consistency with the historical trajectory, the authentic identity is reclaimed
+  and the attacker is evicted.
+- **Geodesic abandonment remains available.** If the prior trajectory cannot be
+  reclaimed, the steward may always abandon it and begin again elsewhere.
 - **Voluntary at any time.** No threshold of compromise needs to be proven.
-  A steward may re-key preemptively.
-- **Trust is not transferable.** The accumulated `trust_resource` on the old
-  trajectory does not automatically migrate to the new one. Trust must be
-  re-earned on the new geodesic. This is the cost of re-keying and also its
-  security property: a stolen identity is worth less over time as the
-  legitimate steward re-establishes their trajectory.
-- **The old trajectory becomes orphaned.** Pulses submitted on the old key
-  remain in the historical record but the key ceases to be valid for new
-  submissions after re-keying.
+  A steward may recover or re-key preemptively.
+- **Minimal coordination cost.** Recovery does not require node permission or
+  central approval. The mesh responds to geometry, not administrative ceremony.
 
 ### Impersonation resistance
 
@@ -167,13 +164,13 @@ that the cost of sustained impersonation grows without bound.
 
 ## 4. Geometry Encodes Behaviour, Not Belief
 
-**Principle:** The OaZaTa coordinate system encodes a steward's *economic
+**Principle:** The ΩZaTa coordinate system encodes a steward's *economic
 behaviour pattern* — the interference signature of their pulse history. It
 does not encode ideology, affiliation, demographics, or any categorical
 label about the steward as a person.
 
 This means:
-- Two stewards at near-identical OaZaTa positions are economically equivalent
+- Two stewards at near-identical ΩZaTa positions are economically equivalent
   to the mesh regardless of who they are.
 - Proximity and constructive interference are purely geometric — they
   describe alignment of economic contribution patterns, not social or
@@ -254,7 +251,7 @@ Scrape target          Sensitive?   Mitigation
 Checkpoint hashes      No           Designed to be public
 Pulse domains/values   No           Aggregate economic signal only
 Steward trust balance  No           Public participation metric
-Steward OaZaTa coords  Low          Topologically unique; no PII mapping
+Steward ΩZaTa coords   Low          Topologically unique; no PII mapping
 pm_ API keys           Yes          Rotate per checkpoint; hash only
 Pulse descriptions     Medium       Per-steward read only; not queryable
 Registration metadata  Yes          Never leaves node (Principle 1)

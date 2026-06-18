@@ -325,6 +325,74 @@ which are at walls, and where the scouts are clustered.
 
 ---
 
+## 9. Broker Integrity and Legitimacy
+
+At small scale, the mesh can operate with direct neighbour-to-neighbour
+broadcast over HTTP. At larger scale, specialised relay nodes or pub/sub
+brokers will emerge because they lower coordination cost and reduce signal
+lag between dense regions of the mesh.
+
+This is not a failure of the no-privileged-frame axiom. It is one of its
+expected consequences. Hierarchies will emerge where the geometry makes
+certain nodes or brokers exceptionally useful as relay points — not because
+they were appointed, but because the mesh routes through them naturally.
+
+The critical constraint is that **broker influence is advisory, never
+sovereign**.
+
+A broker may accelerate gossip diffusion. It may aggregate, relay, and
+buffer broadcasts. It may become highly influential because many nodes
+find its relay service informationally valuable. But it does not become a
+source of ground truth. Every receiving node maintains a local ground truth
+from its own steward population and compares broker-carried signal against
+that local geometry.
+
+### The consistency check
+
+A broker's legitimacy is measurable in the geometry it relays.
+
+If a broker forwards signal faithfully, then the `Q_cross`, `d_Q_cross`,
+and `Φ` patterns it helps a node observe will remain consistent with the
+node's own local steward-derived state and with direct peer broadcasts
+when those are available.
+
+If a broker delays, censors, reorders, or fabricates gossip, the distortion
+appears as a geometric residue:
+
+- `Q_cross` values inconsistent with direct neighbour observations
+- `d_Q_cross/dt` sign changes that do not match local PLL evolution
+- `Φ` readings that imply coherence not supported by local steward motion
+- Stale checkpoint hashes arriving in patterns incompatible with expected lag
+
+A dishonest broker cannot hide behind opacity forever because its distortion
+is not semantic, it is geometric. The discrepancy appears in the receiving
+node's own phase space.
+
+This is the mechanism that keeps hierarchy honest. Brokers may compete for
+legitimacy, throughput, and low latency, but their legitimacy is earned by
+maintaining geometric consistency with the mesh, not by asserting authority
+over it.
+
+### Parliament accelerated
+
+The mature mesh behaves like a parliament whose nominal function has been
+made legible and continuous. In ordinary political systems, bad actors gain
+power by weaponising opacity and signal lag — controlling who hears what,
+when they hear it, and how long divergence can accumulate before it becomes
+visible.
+
+Pulser Mesh narrows that manoeuvre space. To become influential, a broker
+must relay geometric state. To maintain influence, it must do so with enough
+integrity that downstream nodes continue to find its signal consistent with
+their local steward populations. Signal lag and corruption can still occur,
+but they leave residues that are continuously detectable rather than only
+becoming visible after a crisis.
+
+In that sense, the mesh does not abolish hierarchy. It forces hierarchy to
+compete under conditions of geometric accountability.
+
+---
+
 ## Summary of Key Quantities
 
 | Symbol | Name | Expression | Role |

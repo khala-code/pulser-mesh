@@ -263,6 +263,168 @@ Appendix: Wavefunction as Projection of the Keyhole Geodesic.
 
 ---
 
+## 12. Operational Approximation (v1 Implementation)
+
+Sections 1–11 describe the full theoretical object. This section specifies
+the v1 approximation implemented in `app/services/snark.py` and records
+what is deferred to later versions.
+
+The core insight driving the approximation: you cannot hand a node the
+steward's full snark. You can give it a boundary-observable shadow of the
+snark's orbital structure, and compute the centroid of that shadow. The
+shadow is the steward's validated pulse history read as a graph of
+`(checkpoint, domain, Za, trust_delta)` tuples — the same holographic
+surface observable used throughout the protocol.
+
+### 12.1 Boundary-Only Observation
+
+The pulse history graph is constructed from validated pulses exclusively.
+For each pulse, only four fields are read:
+
+| Field | Source | Role in graph |
+|---|---|---|
+| `submitted_at_checkpoint` | Pulse row | Temporal ordering — vertex checkpoint index |
+| `scarcity_domain` | Pulse row | Domain identity — vertex domain label |
+| `Za` | Domain table lookup | Angular position — vertex Za coordinate |
+| `value_add` | Pulse row | Trust magnitude — vertex weight (`trust_delta`) |
+
+Interior fields — pulse description, free text, metadata — are never read.
+This mirrors the holographic principle: the surface reading encodes what matters
+structurally; the interior washes out.
+
+### 12.2 Pulse History Graph
+
+The graph `G = (V, E)` is built as follows.
+
+**Vertices** `V`: one vertex per validated, checkpointed pulse. A vertex is
+the tuple `(checkpoint, domain, za, trust_delta)`.
+
+**Edges** `E`: two types.
+
+- **Sequential edges** — same domain, consecutive checkpoints. These trace the
+  steward's trajectory through a single domain over time. Weight is the
+  `trust_delta` of the source vertex.
+
+- **Proximity edges** — different domains, same checkpoint, angular distance
+  `|Za_i − Za_j| < π/6` (30°). These capture co-activated domains that are
+  Za-adjacent at a given moment. Weight is the mean `trust_delta` of the two
+  vertices.
+
+The proximity threshold `π/6` is a v1 constant. Future versions may derive it
+from the local node's domain table geometry or from the steward's own Ωa.
+
+### 12.3 Null Centroid Inference
+
+The null centroid `Za_c` is the trust-delta-weighted circular mean of all
+vertex Za positions in the graph:
+
+```
+sin_sum = Σ trust_delta_i · sin(za_i)
+cos_sum = Σ trust_delta_i · cos(za_i)
+Za_c    = atan2(sin_sum, cos_sum)  mod 2π
+```
+
+The circular mean correctly handles angular wrap-around — a steward orbiting
+near `Za = 0 / 2π` does not produce a centroid at `π`.
+
+The centroid is suppressed (`None`) until the graph contains at least
+`MIN_CENTROID_PULSES = 5` vertices. Below this threshold the arc is too short
+to reliably distinguish orbit from noise. This maps to the wide-band new-steward
+state in §8.
+
+The v1 centroid is a *single-scale approximation*. It reads only the
+personal-snark scale (the steward's own pulse history). Meta-snark coupling and
+higher recursive scales are not yet incorporated — see §12.6.
+
+### 12.4 Mission Vector and Mission Delta
+
+A steward may declare a mission at registration time by supplying a list of
+`domains` and optional `domain_weights`. The server resolves these to a
+`mission_vector_za`: the Ωa-weighted mean Za of the declared domain cluster
+in the node's domain table (see `app/services/domain.py` and
+`docs/federation.md §2`).
+
+The **mission delta** is the angular divergence between declared and inferred
+direction:
+
+```
+mission_delta = angular_distance(mission_vector_za, null_centroid_za)
+              ∈ [0, π]
+```
+
+| Value | Interpretation |
+|---|---|
+| `0` | Declared and inferred are perfectly aligned |
+| `< π/4` | Coherent identity — steward is doing what they said they would |
+| `π/2` | Orthogonal — steward is active in adjacent, undeclared domains |
+| `> 3π/4` | Persistent divergence — identity is evolving or declaration is stale |
+| `π` | Maximally divergent |
+
+Neither value alone is a trust signal. The delta is an input to `coherence.py`,
+which integrates it with Ωa and Za phase to produce the steward's coherence
+score. Persistent divergence at high Ωa is more diagnostic than divergence at
+low Ωa, because a mature steward's inferred centroid is well-constrained.
+
+Mission delta is `None` if either `mission_vector_za` or `null_centroid_za` is
+absent (undeclared mission, or fewer than `MIN_CENTROID_PULSES` pulses).
+
+### 12.5 Uncertainty Radius
+
+The uncertainty radius bounds how precisely the null centroid is known:
+
+```
+uncertainty_radius = uncertainty_band(n, ta) / sqrt(n)
+```
+
+where `n = pulse_count` and `ta` is the steward's Ta from the identity row.
+
+The outer `uncertainty_band(n, ta)` is the asymptotic authentication window
+from `docs/asymptotic-auth.md §3` — it decays as `(1/√n) · exp(−λ·Ta)`.
+Dividing by a second `√n` compounds the decay: each additional validated pulse
+is a structural constraint on the centroid position, not merely a counting
+statistic. The combined decay is therefore `1/n · exp(−λ·Ta)`.
+
+A steward with 5 pulses has a wide centroid estimate. A steward with 300 pulses
+has a tight one. The radius shrinks continuously; it never reaches zero because
+`n` is always finite.
+
+### 12.6 Update Trigger
+
+`update_snark_identity()` is called by `checkpoint.py` after every checkpoint
+advance, inside a try/except. A snark computation failure logs a warning and
+skips — it must never stall the mesh clock.
+
+The update sequence at each checkpoint:
+
+1. `_build_pulse_graph()` — re-reads the full validated pulse history from the
+   database. Full-history rebuild is O(n) in pulse count and is tractable for
+   foreseeable steward lifetimes. Incremental rebuilds (via `from_checkpoint`)
+   are available if this becomes a bottleneck.
+2. `infer_null_centroid()` — weighted circular mean, returns `None` if below
+   threshold.
+3. `compute_mission_delta()` — angular distance from declared mission vector.
+4. Writes `null_centroid_za`, `mission_delta`, `pulse_count` to the identity row.
+5. Returns a `SnarkUpdate` dataclass consumed by `coherence.py`.
+
+### 12.7 Deferred Items (v2)
+
+The following are specified by the full model but not yet implemented:
+
+| Item | Relevant section | Deferred reason |
+|---|---|---|
+| Multi-scale centroid (neighbourhood, node, regional) | §5 | Requires cross-steward graph reads; left for federation layer |
+| Meta-snark coupling edges | §4 | Depends on inter-node snark exchange protocol |
+| Revelation depth API | §8 | Requires a witness-presentation endpoint not yet specified |
+| Bifurcation cross-check | §7 | Depends on federation.md domain wall logic |
+| Proximity threshold from domain geometry | §12.2 | Requires domain table density analysis |
+| Incremental graph rebuild | §12.6 | Performance optimisation; not yet needed |
+
+Items in this table are stable seam points. The v1 implementation exposes them
+as `None` fields or stubs rather than omitting them, so that v2 can fill them
+in without changing the identity row schema or the `SnarkUpdate` contract.
+
+---
+
 ## Summary
 
 | Concept | Hidden interpretation | Observable consequence |
@@ -274,3 +436,6 @@ Appendix: Wavefunction as Projection of the Keyhole Geodesic.
 | Tightening the band | Deeper revelation depth | Smaller `ΔΨ` |
 | Recovery | Trajectory witness | Attacker eviction with Ωa/Ta preserved |
 | Anti-extraction | Seed outside steward's spacetime | Scrape-now-crack-later structurally eliminated |
+| v1 null centroid | Weighted circular mean of pulse Za arc | `null_centroid_za` on identity row |
+| v1 mission delta | Angular distance: declared vs inferred | `mission_delta` on identity row |
+| v1 uncertainty radius | `1/n · exp(−λ·Ta)` decay | Narrows with pulse count and maturation |

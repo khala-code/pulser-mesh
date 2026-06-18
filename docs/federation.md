@@ -281,28 +281,107 @@ Capture radius widens when:
 
 ## 7. The Seam for v2 Implementation
 
-The following are explicitly deferred:
+The following remain explicitly deferred to v2:
 
 - **Live precession computation** — the Ωa-weighted domain vector merge
-  requires access to aggregate steward data across subnets, which requires
-  a federation gossip protocol not yet specified.
-- **Capture radius estimation** — requires cross-subnet Ωa aggregate exchange.
-  Until the gossip layer exists, the sign-flip classifier can be approximated
-  locally: a federal node that sees `d(Q_cross)/dt > 0` across successive
-  checkpoints is outside the capture basin.
+  (§3) requires access to aggregate steward data across subnets, which
+  requires a cross-subnet federation gossip exchange not yet specified.
+  The `negotiate_precession()` stub in the server accepts a foreign domain
+  vector table and computes the merged set and per-steward precession cost,
+  but returns without writing until the protocol layer exists.
+
+- **Capture radius estimation** — requires cross-subnet Ωa aggregate
+  exchange. The v0.1.0 gossip layer carries `phi` (Φ, the node-local order
+  parameter) and `omega_a` per NodeGossip payload. These are the building
+  blocks; the cross-node Ωa sum requires a quorum read across peers,
+  deferred to the federation gossip protocol.
+
 - **Representative election mechanism** — the collective null centroid
-  computation requires a collective boundary definition (which stewards
-  belong to which collective) that is not yet formalised.
+  computation (§5) requires a collective boundary definition — which
+  stewards belong to which collective — that is not yet formalised. The
+  per-steward `null_centroid_za` and `mission_delta` fields are computed
+  and stored from v0.1.0 onward; the collective aggregation is v2.
 
-The v1 server implementation provides:
+- **GossipEnvelope** — relay metadata and broker consistency checks that
+  extend the v1 `NodeGossip` payload. The router unpacking point is
+  reserved; the inner `NodeGossip` path is unchanged.
 
-- Node-local `DomainVector` table with Za angle and weight per domain
-- Mission vector resolution: domain cluster → Za angle at registration
-- `mission_delta` field: angular difference between declared and inferred
-  trajectory, updated per checkpoint
-- `negotiate_precession()` stub: accepts a foreign domain vector table,
-  computes the merged set and precession cost per steward, returns without
-  writing — ready for the federation gossip layer to call when specified
+---
+
+## 8. What v0.1.0 Delivers
+
+`pulsermesh-server` v0.1.0 (tagged `2026-06-18`) provides the structural
+foundation on which federation will be built. The following are live and
+tested:
+
+### Gossip layer (Mode A — direct HTTP)
+
+The gossip layer is the observable backbone of federation. Every checkpoint
+advance now broadcasts a `NodeGossip` payload to all registered peers:
+
+```
+NodeGossip = {
+  node_id, checkpoint_index, checkpoint_hash,
+  za,          -- this node's current phase reference
+  omega_a,     -- this node's orbit amplitude (Ωa mass proxy)
+  q_cross,     -- PLL error signal: node_quadrature_aggregate over steward population
+  phi,         -- Φ order parameter: mesh economic coherence at this checkpoint
+  ta_ref       -- Ta reference agreed at this checkpoint
+}
+```
+
+This payload carries everything a receiving node needs to:
+1. Compute its local `q_cross_local = phase_lag_signal(payload.za, node_za)` —
+   the receiving node's view of the phase gap between the two nodes
+2. Detect a **sign flip** in `q_cross_local` across successive checkpoints
+   from the same peer — the endogenous classifier from §6 is now running
+   in production. `GossipLog.sign_flip` and `GossipLog.anomaly_flagged`
+   record every event
+3. Monitor `phi` (Φ) as a live signal of the sending node's internal
+   coherence — directly comparable to the order parameter discussed in
+   `docs/asymptotic-auth.md` §7
+
+### Sign-flip detection — §6 classifier live
+
+The domain wall classifier described in §6 is implemented in
+`app/services/gossip._detect_sign_flip()`. It runs on every inbound gossip
+receipt. The threshold (`SIGN_FLIP_MAGNITUDE_THRESHOLD = 0.05`) filters out
+noise in the PLL signal below which sign is uninformative.
+
+In v0.1.0 the classifier is **observational** — it flags and logs. The
+Policy response (e.g. halting domain vector merge negotiation when outside
+the capture basin) is wired in v2.
+
+### PLL quantities per checkpoint
+
+The full set of asymptotic-auth §§2–7 quantities are computed and stored
+per checkpoint advance:
+
+| Quantity | Server field | Updated |
+|---|---|---|
+| `q_cross` (Q_node aggregate) | `NodeGossip.q_cross` | Every checkpoint, broadcast to peers |
+| `phi` (Φ order parameter) | `NodeGossip.phi` | Every checkpoint, broadcast to peers |
+| `null_centroid_za` | `OaZaTaIdentity.null_centroid_za` | Every checkpoint per steward |
+| `mission_delta` | `OaZaTaIdentity.mission_delta` | Every checkpoint per steward |
+| `uncertainty_radius` | `OaZaTaIdentity.uncertainty_radius` | Every checkpoint per steward |
+| `za_node` (node PLL phase) | `settings.node_za` + future `dZa/dt` | Node config; dynamic update v2 |
+
+The one gap: `node_za` is currently static (set from config at startup). The
+node PLL step `dZa/dt = −κ · Q_node` from `asymptotic-auth.md` §6 is
+implemented in `asymptotic.node_za_update()` but not yet wired into the
+checkpoint advance loop. That is the first task of v0.2.0 — completing the
+node's own phase self-correction — at which point the federation machinery
+becomes fully dynamic.
+
+### Peer infrastructure
+
+- `Peer` table: `peer_id`, `url`, `last_seen_checkpoint`, `last_seen_at`,
+  `anomaly_count`
+- `GossipLog` table: append-only, immutable per row, direction
+  (inbound/outbound), `q_cross`, `sign_flip`, `anomaly_flagged`
+- Admin endpoints: `POST /gossip/peers`, `GET /gossip/peers`,
+  `DELETE /gossip/peers/{peer_id}`
+- Inbound endpoint: `POST /gossip` (no auth — any mesh peer may deliver)
 
 ---
 

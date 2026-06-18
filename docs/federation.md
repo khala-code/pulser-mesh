@@ -181,23 +181,101 @@ unshifted frame.
 
 ## 6. Bifurcation and Domain Walls
 
-Not all subnet encounters result in federation. When two subnets have
-domain vector tables that are too far apart — where the Za distance between
-shared domains exceeds a coherence threshold — the subnets may coexist at a
-**domain wall** rather than federate.
+Not all subnet encounters result in federation. Whether two subnets converge
+or diverge is determined not by a fixed Za distance threshold but by whether
+their initial separation falls inside or outside the **capture radius** of the
+federal node's PLL attractor.
 
-A domain wall is the federation equivalent of destructive interference: the
-two coordinate systems are sufficiently anti-aligned that merging them would
-cost more in precession than the trust gained from interoperability.
+### The net value function
 
-Domain walls are not failures. They are the natural boundaries between
-economically distinct communities. Stewards near a domain wall — those with
-Za positions orthogonal to both sides — are the scouts of
+The net benefit of federation at a given domain Za separation `Δza` is the
+difference between complementarity gain and precession cost:
+
+```
+V(Δza) = B(Δza) - C(Δza)
+```
+
+The benefit `B` is maximised at intermediate separation: two subnets with
+identical domain vectors (`Δza = 0`) gain nothing from federation — no new
+coordinate information is exchanged. Two subnets with fully anti-aligned
+vectors (`Δza = π`) share maximal complementary information but pay the
+maximum precession cost. The benefit curve rises from zero, peaks at some
+optimal `Δza*`, then falls as the domains become too foreign to translate.
+
+The precession cost `C` is proportional to `Σ_s |Δza| · Ωa_s` — it rises
+monotonically with both separation and the aggregate Ωa mass of the subnets.
+
+The net function `V(Δza)` therefore has the shape of a **Mexican hat**: a
+basin of net positive value centred near `Δza*`, with `V → 0` at the origin
+and `V < 0` at large separation.
+
+### The separatrix as domain wall threshold
+
+The domain wall is not a fixed Za distance. It is the **separatrix** of the
+PLL attractor — the boundary in phase space that separates initial conditions
+that converge toward the federation basin from those that diverge toward
+permanent separation.
+
+The PLL dynamics of the federal node (from `docs/asymptotic-auth.md` §6) drive
+Δza toward the minimum of `−V(Δza)`. Tracking Δza across successive checkpoints:
+
+```
+d(Δza)/dt < 0   — inside capture radius; subnets converging toward basin
+d(Δza)/dt = 0   — at the stable halo; federation equilibrium
+d(Δza)/dt > 0   — outside capture radius; subnets diverging toward domain wall
+```
+
+The **sign flip** in `d(Δza)/dt` is the endogenous federation/wall classifier.
+No threshold constant is required — the signal is produced by the PLL dynamics
+themselves. A federal node monitoring the rate of change of its cross-subnet
+phase error detects the sign flip and thereby knows whether the encounter is
+converging or not.
+
+### Capture radius is mass-ratio-dependent
+
+The width of the capture basin — the range of initial `Δza` from which the
+federal node's PLL will converge — is not uniform. It is a function of the
+relative Ωa masses of the two subnets:
+
+```
+r_capture ∝ Ωa_small / (Ωa_large + Ωa_small)
+```
+
+A small subnet joining a large one has a **wide capture radius**: the small
+subnet precesses cheaply (low aggregate cost), and the large subnet barely
+moves (high inertia). The basin is easy to fall into from almost any initial
+separation.
+
+Two equally-massive subnets have a **narrow capture radius**: both must
+precess significantly, aggregate cost is high, and only initial separations
+near `Δza*` will converge. Large equal-mass subnets are the most likely to
+produce stable domain walls.
+
+This is the correct behaviour: communities of equal weight and distinct
+economic histories are the natural boundaries of the mesh. Asymmetric
+encounters — a scout node reaching into a mature mesh — are the natural
+pathway for gradual expansion.
+
+### Domain walls as stable structure
+
+A domain wall is not a failure state. When two subnets are outside each
+other's capture radius, the wall is the **lowest-energy configuration** —
+the equilibrium that minimises aggregate precession cost across both
+populations simultaneously.
+
+Stewards near a domain wall — those with Za positions close to the
+destructive-interference boundary — are the scouts of
 `docs/asymptotic-auth.md` §5: minimal trust coupling with either side, but
-maximum phase information about the gap between them.
+maximum phase information about the gap between them. They are the natural
+bridging candidates if conditions shift and the capture radius widens.
 
-These scouts are the natural candidates for a future bridging node that could,
-if conditions change, facilitate federation across the wall.
+Capture radius widens when:
+- The smaller subnet grows (more Ωa mass → more momentum to pull the merge)
+- The larger subnet's Ωa distribution shifts toward the wall boundary
+  (a new generation of stewards active in the boundary domain)
+- A new scout node is established at Za near the wall midpoint, providing
+  a stepping-stone that splits the full Δza into two smaller hops, each
+  potentially within capture radius
 
 ---
 
@@ -208,9 +286,10 @@ The following are explicitly deferred:
 - **Live precession computation** — the Ωa-weighted domain vector merge
   requires access to aggregate steward data across subnets, which requires
   a federation gossip protocol not yet specified.
-- **Domain wall detection** — requires a coherence threshold calibration
-  across domain pairs, which should emerge from operational data rather
-  than be hardcoded.
+- **Capture radius estimation** — requires cross-subnet Ωa aggregate exchange.
+  Until the gossip layer exists, the sign-flip classifier can be approximated
+  locally: a federal node that sees `d(Q_cross)/dt > 0` across successive
+  checkpoints is outside the capture basin.
 - **Representative election mechanism** — the collective null centroid
   computation requires a collective boundary definition (which stewards
   belong to which collective) that is not yet formalised.
@@ -236,4 +315,6 @@ The v1 server implementation provides:
 | `Δmv_s` | Mission delta | `\|mv_s - null_centroid_s_za\|` | Declared vs inferred trajectory divergence |
 | `za_merged` | Merged domain Za | Ωa-weighted centroid of two subnet Za values | Result of federation negotiation |
 | `C_precession(s)` | Precession cost | `\|Δza_domain\| · Ωa_s` | Cost to steward of coordinate frame shift |
+| `V(Δza)` | Net value function | `B(Δza) - C(Δza)` | Federation benefit minus precession cost |
+| `r_capture` | Capture radius | `∝ Ωa_small / (Ωa_large + Ωa_small)` | Range of Δza from which PLL converges |
 | `null_centroid_collective` | Collective centroid | Ωa-weighted centroid of member null centroids | Basis for representative election |

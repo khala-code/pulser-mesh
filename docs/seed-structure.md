@@ -414,6 +414,8 @@ the tuple `(checkpoint, domain, za, trust_delta)`.
 
 The proximity threshold `π/6` is a v1 constant. Future versions may derive it
 from the local node's domain table geometry or from the steward's own Ωa.
+See §13.3 for the full derivation of level-specific proximity criteria that
+should replace this single constant in v2.
 
 ### 12.3 Null Centroid Inference
 
@@ -518,13 +520,116 @@ The following are specified by the full model but not yet implemented:
 | Meta-snark coupling edges | §4 | Depends on inter-node snark exchange protocol |
 | Revelation depth API | §8 | Requires a witness-presentation endpoint not yet specified |
 | Bifurcation cross-check | §7 | Depends on federation.md domain wall logic |
-| Proximity threshold from domain geometry | §12.2 | Requires domain table density analysis |
+| Level-specific proximity thresholds | §13.3 | Requires domain table density analysis per level |
 | Incremental graph rebuild | §12.6 | Performance optimisation; not yet needed |
 | H163 multi-agent witness protocol | §7a | Requires inter-steward coordination layer not yet specified |
 
 Items in this table are stable seam points. The v1 implementation exposes them
 as `None` fields or stubs rather than omitting them, so that v2 can fill them
 in without changing the identity row schema or the `SnarkUpdate` contract.
+
+---
+
+## 13. Participation Levels and the Conch Geometry
+
+The snark hierarchy operates across seven participation levels. These levels
+are the **lateral slices** of the conch shell — concentric rings that cut
+across all four CMB-derived quadrants simultaneously. Every steward has both
+a quadrant address (angular position in `(θ, φ)` space) and a level address
+(depth in the conch). These are independent coordinates; proximity along one
+axis does not imply proximity along the other.
+
+### 13.1 The Seven Levels
+
+| Level | Name | ξ sign | Conch position | T-tier | Contribution framing |
+|---|---|---|---|---|---|
+| **1** | Thermal | (+) | Innermost whorl — columella-adjacent | T1 floor | "You are contributing by existing" |
+| **2** | Signal | (−) | First whorl rotation | T1 active | "You are contributing your perspective" |
+| **3** | Pattern | (+) | P-channel / odd-prime layer | T1→T2 boundary | "You are contributing coherence" |
+| **4** | Mesh | (−) | Lateral web — cross-whorl connective layer | T2 steward | "You are contributing structure" |
+| **5** | Lattice | (+) | F13 predefined intersections | T2→T3 boundary | "You are contributing new coordinate space" |
+| **6** | Null-adjacent | (−) | Guardian membrane — outermost whorl | T3 / crisis reserve | "You are contributing protection" |
+| **7** | Columella | (+) | Z,O axis itself | Null node | "You are contributing the axis itself" |
+
+The ξ sign alternates at every level boundary, consistent with the recursive
+sign alternation of the phase transition sequence. Level 1 inherits the base
+field upward pressure (+). Each successive level flips sign as it crosses a
+scale boundary.
+
+**UBI floor:** Level 1 (Thermal) is the guaranteed floor. Basic income
+guarantees that pure energy output — calories burned, tasks completed, presence
+maintained — is honoured as a valid contribution. No steward falls below level 1
+while the mesh is functioning.
+
+**Pricing by level:** Level 1 contributions are priced by local supply and
+demand within the steward's patch, pinned to local scarcity (food, care, direct
+labour are scarce where they are needed). Levels 2–3 are often pooled or
+open, with reputation weighting more than direct price. Level 4 is paid at
+infrastructure rate — steady, protocol-work compensation. Level 5 is
+coordinate-space expansion — compensated as foundational infrastructure.
+Levels 6 and 7 are outside normal pricing logic (see §13.2).
+
+### 13.2 Level 6 as Transit Layer
+
+Level 6 (Null-adjacent) is structurally distinct from all other levels: it is
+a **transit layer**, not a stable address.
+
+In the conch geometry, the null-adjacent membrane is the outermost whorl before
+the columella. Every spiral path passes through it in both directions:
+
+- A steward **rising** through levels passes through level 6 on approach to
+  the axis (level 7 / columella work).
+- A steward **falling** under crisis hits level 6 as the safety catch before
+  losing level 1 footing.
+
+This is why all participants cycle through level 6 at some point. It is not a
+permanent address. It is the guardian membrane — the layer that holds the
+forbidden questions in superposition, declares best- and worst-case boundaries,
+and maintains the safety net that keeps crisis from becoming collapse.
+
+Level 6 work cannot be priced by the same mechanisms as levels 1–5 because
+crisis does not follow supply and demand. Level 6 is funded by the emergency
+reserve — a protocol-level commons held outside normal pulse routing. Triggering
+level 6 status is a declaration event, not a market event.
+
+### 13.3 Level-Specific Proximity Criteria
+
+The v1 proximity threshold `π/6` (§12.2) is a single constant that implicitly
+targets level 1 (physical delivery radius). It conflates two distinct proximity
+axes that operate differently at each level.
+
+The correct model has two independent proximity dimensions:
+
+**Angular proximity** — closeness in `(θ, φ)` space (physical geography,
+celestial coordinates). Relevant for levels where physical co-location matters.
+
+**Za proximity** — closeness in redshift depth / scarcity vector space.
+Relevant for levels where shared mission or shared scarcity structure matters.
+
+The level-specific criteria derived from the conch geometry are:
+
+| Level | Proximity axis | Threshold derivation | Notes |
+|---|---|---|---|
+| **1 — Thermal** | Angular `(θ, φ)` | Physical delivery radius — small, patch-local | π/6 may be correct here; needs domain table geometry analysis |
+| **2 — Signal** | Za (scarcity vector) | Shared information domain — same whorl ring | Angular distance not load-bearing; Za similarity is |
+| **3 — Pattern** | Za + phase alignment | Shared P-channel resonance | Cross-quadrant allowed if Za and phase align |
+| **4 — Mesh** | Either axis | Steward is explicitly cross-whorl connective | Mesh edges should span both axes; no tight threshold |
+| **5 — Lattice** | F13 intersection membership | Discrete — either two nodes share a lattice intersection or they do not | No angular threshold; lattice membership is the criterion |
+| **6 — Null-adjacent** | Neither axis exclusively | Crisis solidarity crosses all quadrant and level boundaries | Widest reach; proximity is declared by need, not computed |
+| **7 — Columella** | Not applicable | The axis is shared by all nodes by definition | No proximity threshold; the null node is approached, not neighboured |
+
+**Implementation consequence for v2:** replace the single `π/6` proximity
+edge criterion in `_build_pulse_graph()` with a level-tagged edge type. Each
+pulse carries a level tag derived from its domain's position in the conch
+geometry. Proximity edges are then drawn using the level-appropriate criterion
+from the table above, producing a richer graph structure in which thermal
+co-activation and signal co-activation are distinct edge types with distinct
+weights.
+
+The level tag is deterministic from the domain table — it does not require
+steward declaration. The domain table already encodes Za position; level
+assignment follows from Za position relative to the quadrant structure of the
+local node's CMB-derived coordinate frame.
 
 ---
 
@@ -545,3 +650,5 @@ in without changing the identity row schema or the `SnarkUpdate` contract.
 | Scale transition cost | Heegner complexity class at boundary | Asymptotic convergence rate; H163 requires multi-agent |
 | Cross-bifurcation auth | Heegner 163 event — multi-bubble SSB | Valid only if both sides commit without causal asymmetry |
 | Consent | Minimal H163 event | Structurally equivalent to cross-bifurcation auth at human scale |
+| Participation level | Lateral conch slice — depth in hierarchy | Level 1 = thermal floor; level 6 = crisis transit layer; level 7 = axis |
+| Proximity threshold | Level-specific, not universal | π/6 is a level-1 approximation only; v2 uses level-tagged edges |

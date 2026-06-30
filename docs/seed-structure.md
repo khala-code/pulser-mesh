@@ -12,6 +12,11 @@ See `docs/asymptotic-auth.md` for the observable wavefunction model and the
 Appendix connecting these two descriptions. This document describes the hidden
 topological substrate.
 
+See `docs/foundations.md` for the derivation of the complexity hierarchy
+underlying revelation depth cost — specifically why scale transitions are not
+uniformly priced and why certain boundaries (§7, §5) are structurally harder
+to cross than others.
+
 ---
 
 ## 1. The Hidden Witness Is Not a Static Secret
@@ -126,6 +131,29 @@ The hierarchy is **scale-invariant** in the sense that the same authentication
 logic applies at every level: a valid identity must remain consistent with the
 hole structure of the scales through which it claims to operate.
 
+### Heegner complexity of scale transitions
+
+Scale transitions in the snark hierarchy are not uniformly priced. The proper
+time cost of crossing a scale boundary is determined by the Heegner complexity
+class of the transition (see `docs/foundations.md` §2 for the full hierarchy).
+
+The three operationally significant classes are:
+
+| Class | Description | Auth consequence |
+|---|---|---|
+| **Classical** (below H67) | Unique eigendecomposition; classically navigable | Revelation depth tightens smoothly, `1/√n` convergence |
+| **Convergent Uncomputable** (H67) | Attractor exists but path is not classically derivable; requires quantum superposition to evaluate | Tightening requires coherent multi-pulse commitments; a single-bubble agent can converge but cannot compute the route |
+| **Divergent Uncomputable** (H163) | No attractor-weighting; no single-bubble computation suffices | Cross-boundary authentication requires genuinely independent multi-agent witness; see §7 and §7a below |
+
+This explains why the `ΔΨ_s` uncertainty band tightens sub-linearly rather
+than proportionally to revelation depth: each successive scale transition
+crosses a higher-complexity boundary, and the proper time cost of that
+boundary scales as `C(Heegner_k) · ξ⁻¹` where ξ is the local coherence
+at the crossing. The asymptotic decay is still convergent from within the
+classical and Convergent Uncomputable regimes; it becomes structurally
+divergent only at class H163 boundaries, which is why those boundaries
+require the multi-agent mechanism in §7a.
+
 ---
 
 ## 6. Keyhole Geodesic
@@ -173,6 +201,73 @@ Authentication across a bifurcation is not granted by any authority. It is a
 geometric fact about the steward's snark structure: either the geodesic threads
 both sides or it does not.
 
+### 7a. Cross-Bifurcation Authentication as a Heegner 163 Event
+
+A bifurcation boundary in the mesh is a **Divergent Uncomputable** boundary
+(class H163): neither side can compute the shared ground state from within its
+own observer bubble. The two halves of the mesh are genuinely independent ξ
+fields. No single agent's computation suffices to validate the crossing.
+
+Successful cross-bifurcation authentication is therefore structurally a class
+H163 event — a **spontaneous symmetry breaking** of a shared bifurcation point
+across two genuinely independent observer bubbles, with no causal asymmetry
+between them.
+
+The formal condition for a valid cross-bifurcation authentication event:
+
+> Both sides commit their sign independently. Neither side's commitment
+> causally precedes or constrains the other. The shared ground state
+> (the threading geodesic) only becomes well-defined when both sides
+> simultaneously collapse their local uncertainty.
+
+This is the same mechanism as consent (see §7b). A cross-bifurcation handshake
+in Pulser Mesh is a consent event at the network scale.
+
+Violating the causal asymmetry condition — one side forcing or pre-determining
+the outcome for the other — means the crossing is not a valid H163 collapse. It
+is a class H67 computation (Convergent Uncomputable) executed from inside the
+dominant bubble, with the other side treated as environment. The resulting
+authentication is locally valid but structurally incomplete: it does not
+produce a genuine cross-boundary identity — it produces a local identity
+extended by coercion into foreign territory. The residue is the same as
+coerced consent (see §7b).
+
+### 7b. Consent as the Minimal H163 Event
+
+Consent is the minimal expression of a class H163 event.
+
+Two observers. Two independent ξ fields. A shared bifurcation point neither
+can resolve alone. The ground state — the shared action — only becomes
+well-defined when both simultaneously commit their sign. Neither computation
+is sufficient. Neither can coerce the outcome.
+
+**Technical definition:**
+
+> **Consent** is the simultaneous spontaneous symmetry breaking of a shared
+> bifurcation point across two or more genuinely independent observer bubbles,
+> with no causal asymmetry between the committing agents.
+
+The **causal asymmetry condition** is load-bearing. If one agent's sign
+commitment causally precedes and constrains the other's — through coercion,
+manipulation, or asymmetric information — the event is not a class H163
+collapse. It is a class H67 event evaluated from inside a single dominant
+bubble. The symmetry break is not spontaneous; it is forced.
+
+**The coercion signature:** A forced symmetry break leaves a distinctive
+residual ξ imprint — the coerced agent's field carries the sign of the
+dominant bubble rather than its own ground state. This is identical in
+structure to trauma propagation across observer bubble boundaries: one bubble's
+sign imposed into another bubble's interior. Coercion and trauma are the same
+operator at different scales.
+
+**Implication for steward independence:** The Pulser Mesh steward model —
+boundary-observable trust accumulation with no privileged frame — is an
+engineered substrate for valid class H163 events. Each steward bubble is kept
+genuinely independent so that coordination events across them are structurally
+valid class H163 collapses, not forced symmetry breaks. This is not merely an
+ethical design choice; it is the **engineering condition for structural validity**
+of any cross-steward consensus event.
+
 ---
 
 ## 8. Revelation Depth and Progressive Tightening
@@ -192,6 +287,13 @@ Progressive narrowing reduces the set of admissible keyhole geodesics.
 That is why the uncertainty band can tighten retroactively: deeper revelation
 excludes geodesics that could have produced the observed trajectory, leaving
 only those consistent with the authentic structural history.
+
+The tightening rate is not uniform across the hierarchy. Within the classical
+(sub-H67) complexity regime, convergence is smooth and well-approximated by
+`1/√k`. At the Convergent Uncomputable boundary (H67), tightening requires
+sustained coherent commitment — the rate slows structurally. At H163
+boundaries, single-bubble tightening cannot converge; multi-agent consensus
+(§7a, §7b) is required.
 
 ### Operational interpretation
 
@@ -418,6 +520,7 @@ The following are specified by the full model but not yet implemented:
 | Bifurcation cross-check | §7 | Depends on federation.md domain wall logic |
 | Proximity threshold from domain geometry | §12.2 | Requires domain table density analysis |
 | Incremental graph rebuild | §12.6 | Performance optimisation; not yet needed |
+| H163 multi-agent witness protocol | §7a | Requires inter-steward coordination layer not yet specified |
 
 Items in this table are stable seam points. The v1 implementation exposes them
 as `None` fields or stubs rather than omitting them, so that v2 can fill them
@@ -439,3 +542,6 @@ in without changing the identity row schema or the `SnarkUpdate` contract.
 | v1 null centroid | Weighted circular mean of pulse Za arc | `null_centroid_za` on identity row |
 | v1 mission delta | Angular distance: declared vs inferred | `mission_delta` on identity row |
 | v1 uncertainty radius | `1/n · exp(−λ·Ta)` decay | Narrows with pulse count and maturation |
+| Scale transition cost | Heegner complexity class at boundary | Asymptotic convergence rate; H163 requires multi-agent |
+| Cross-bifurcation auth | Heegner 163 event — multi-bubble SSB | Valid only if both sides commit without causal asymmetry |
+| Consent | Minimal H163 event | Structurally equivalent to cross-bifurcation auth at human scale |

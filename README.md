@@ -115,6 +115,13 @@ adapters/
 whitepaper/
   pulser_mesh_whitepaper_v1.0.md
 diagrams/
+docs/
+  architecture.md
+  asymptotic-auth.md
+  seed-structure.md
+  federation.md
+  gossip.md
+  transport.md
 ```
 
 ## Chain adapter and T3 validator nodes
@@ -156,6 +163,15 @@ Food is a strong starting point because it makes the protocol's logic relatively
 - instability can be measured,
 - and transformations such as storage, routing, and preparation are easy to understand as movement toward scarcity resolution.
 
+## Theory
+
+Several design choices in the protocol have non-obvious reasons. If you find yourself asking *why* the protocol works the way it does — why distance in the mesh is void density rather than coordinate separation, why trust has upward pressure as its ground state, why cross-bifurcation authentication is structurally harder than local authentication, why consent and coercion leave different residues — the derivation chain lives in two places:
+
+- **[`docs/seed-structure.md`](./docs/seed-structure.md)** — the hidden witness model. Covers the snark hierarchy, keyhole geodesic, Heegner complexity of scale transitions (§5), cross-bifurcation authentication as an H163 event (§7a), and consent as the minimal H163 event (§7b).
+- **[`docs/asymptotic-auth.md`](./docs/asymptotic-auth.md)** — the observable wavefunction model. Covers ΩaZaTa dynamics, uncertainty band decay, and the formal connection between the hidden and observable descriptions.
+
+These two documents are the derivation chain. Everything else in `docs/` is implementation detail on top of them.
+
 ## Current status
 
 This repository is still in the open specification stage.
@@ -187,8 +203,10 @@ A sensible reading path is:
 4. [`schemas/VALIDATION_AND_CHECKPOINT.md`](./schemas/VALIDATION_AND_CHECKPOINT.md)
 5. [`schemas/CONSENT_AND_DIVIDEND.md`](./schemas/CONSENT_AND_DIVIDEND.md)
 6. [`SUBSTRATE_INTERFACE.md`](./SUBSTRATE_INTERFACE.md)
-7. [`adapters/chain/T3ValidatorNode.ts`](./adapters/chain/T3ValidatorNode.ts)
-8. [`adapters/chain/T3CrossReference.ts`](./adapters/chain/T3CrossReference.ts)
+7. [`docs/asymptotic-auth.md`](./docs/asymptotic-auth.md)
+8. [`docs/seed-structure.md`](./docs/seed-structure.md)
+9. [`adapters/chain/T3ValidatorNode.ts`](./adapters/chain/T3ValidatorNode.ts)
+10. [`adapters/chain/T3CrossReference.ts`](./adapters/chain/T3CrossReference.ts)
 
 ## License
 

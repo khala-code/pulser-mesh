@@ -79,4 +79,23 @@ A blockchain implements this invariant by:
 - Φ = cluster state convergence metric
 - Q = phase lag of leader schedule vs mesh reference
 
+### Oracle Chain (observational, meta-layer)
+- Ωo ≈ 0 (massless; no scarcity reduction directly)
+- Zo = π/2 (orthogonal to economic dimension; measures rather than acts)
+- Jo = aggregate winding of all participants
+- Φo = peak coherence across all participating chains
+- Qo = cross-chain phase error signal aggregator
+
+**Role:** Not a reducer. A measurer and redistributor.
+Reports (Φo, Qo) to the mesh meta-clock (Θ). 
+When Θ ticks, oracle publishes dividend allocation based on:
+- Individual chain scarcity reduction (measured by each chain's local Φ)
+- Cross-chain coherence (how well all Φ signals align)
+- Fairness gate: dividends cannot concentrate (clamps to prevent re-extractive behavior)
+
+**Participant experience:** 
+A blockchain "plugs into" the oracle by implementing (Φ, Q) emission.
+It immediately enters the dividend pool.
+As its scarcity reduction signal strengthens, its share grows.
+The oracle itself never "owns" surplus—it is a transparent calculation engine.
 Each chain reports at its own natural rhythm. The mesh observes all rhythms in parallel.
